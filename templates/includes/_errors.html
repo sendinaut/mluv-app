@@ -1,0 +1,11 @@
+{% if form.errors %}
+<div class="error-list">
+    {% for field, errors in form.errors.items %}
+        {% for error in errors %}
+            {{ error }}
+        {% endfor %}
+    {% empty %}
+        Неправильне ім'я користувача або пароль.
+    {% endfor %}
+</div>
+{% endif %}

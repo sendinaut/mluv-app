@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Помилка доступу — Mluv{% endblock %}
+
+{% block wrapper_class %}auth-layout{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/auth.css' %}" />
+{% endblock %}
+
+{% block content %}
+<div class="container-auth" style="text-align: center;">
+  <div class="card-auth">
+
+    <div class="error-icon" style="font-size: 48px; color: var(--accent); margin-bottom: -10px;">
+      ⚠️
+    </div>
+
+    <div class="header-auth">
+      <div class="title-auth">Доступ обмежено</div>
+      <div class="subtitle-auth">Щось пішло не так із вашим посиланням</div>
+    </div>
+
+    <div class="error-list">
+      {{ error }}
+    </div>
+
+    <p style="font-size: 14px; color: rgba(0, 0, 0, 0.5); line-height: 1.5; padding: 0 10px; margin-top: -10px;">
+      Реєстрація на платформі Mluv можлива лише за дійсним запрошенням від вашого вчителя або адміністратора системи.
+    </p>
+
+    <a href="{% url 'user:login' %}" class="btn-submit" style="text-decoration: none; display: block; text-align: center;">
+      Повернутися до входу
+    </a>
+
+  </div>
+</div>
+{% endblock %}

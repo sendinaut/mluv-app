@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Реєстрація — Mluv{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/auth.css' %}" />
+{% endblock %}
+
+{% block content %}
+  <div class="container-auth">
+    <div class="card-auth">
+      <div class="header-auth">
+        <div class="title-auth">Створити акаунт</div>
+        <div class="subtitle-auth">Приєднуйтесь до платформи Mluv</div>
+      </div>
+
+      {% if form.errors %}
+        <div class="error-list">
+          {% for field in form %}
+            {% for error in field.errors %}
+              <div>• {{ error }}</div>
+            {% endfor %}
+          {% endfor %}
+          {% for error in form.non_field_errors %}
+            <div>• {{ error }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <form method="post">
+        {% csrf_token %}
+
+        {{ form.invite_token }}
+
+        <div class="form-group">
+          <label for="{{ form.email.id_for_label }}">Email</label>
+          {{ form.email }}
+        </div>
+
+        <div class="form-group">
+          <label for="{{ form.password1.id_for_label }}">Пароль</label>
+          {{ form.password1 }}
+        </div>
+
+        <div class="form-group">
+          <label for="{{ form.password2.id_for_label }}">Підтвердження пароля</label>
+          {{ form.password2 }}
+        </div>
+
+        <button type="submit" class="btn-submit">Зареєструватися</button>
+      </form>
+
+      <div class="footer-link">
+        Вже маєте акаунт? <a href="{% url 'user:login' %}">Увійти</a>
+      </div>
+    </div>
+  </div>
+{% endblock %}

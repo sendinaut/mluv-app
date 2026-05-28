@@ -1,0 +1,22 @@
+{% load static %}
+<!doctype html>
+<html lang="uk">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{% block title %}Mluv{% endblock %}</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="{% static 'css/global.css' %}">
+
+    {% block extra_css %}{% endblock %}
+  </head>
+  <body>
+    {% block content %}
+    {% endblock %}
+  </body>
+</html>

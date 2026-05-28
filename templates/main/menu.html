@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Головне меню — Mluv{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/dashboard.css' %}" />
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-body">
+  <div class="container-dashboard" role="main">
+    <div class="header-dashboard">
+      <div class="title">Головне меню</div>
+
+      <form method="post" action="{% url 'user:logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="btn-logout">Вийти →</button>
+      </form>
+    </div>
+
+    {% if user.is_teacher %}
+    <div>
+      <div class="section-label">Кабінет репетитора</div>
+      <div class="grid" style="margin-top: 10px">
+
+        <a href="#" class="card-menu">
+          <div class="name">Розклад</div>
+          <div class="meta">Перегляд і редагування тижневого розкладу</div>
+        </a>
+
+        <a href="#" class="card-menu">
+          <div class="name">Мої учні</div>
+          <div class="meta">Додавання та редагування студентів</div>
+        </a>
+
+        <a href="#" class="card-menu">
+          <div class="name">Планувальник</div>
+          <div class="meta">Регулярні уроки на кілька тижнів наперед</div>
+        </a>
+
+      </div>
+    </div>
+    {% endif %}
+
+    {% if user.is_student %}
+    <div style="margin-top: 10px;">
+      <div class="section-label">Кабінет студента</div>
+      <div class="grid" style="margin-top: 10px">
+        <a href="#" class="card-menu">
+          <div class="name">Мій кабінет</div>
+          <div class="meta">Додавання та редагування студентів</div>
+        </a>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

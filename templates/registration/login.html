@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Вхід — Mluv{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/auth.css' %}" />
+{% endblock %}
+
+{% block content %}
+<div class="container-auth">
+  <div class="card-auth">
+    <div class="header-auth">
+      <div class="title-auth">Вітаємо у Mluv</div>
+      <div class="subtitle-auth">Увійдіть, щоб продовжити навчання</div>
+    </div>
+
+    {% include 'includes/_errors.html' %}
+
+    <form method="post" action="{% url 'user:login' %}">
+      {% csrf_token %}
+
+      <div class="form-group">
+        <label for="id_username">Email</label>
+        <input
+          type="email"
+          name="username"
+          id="id_username"
+          class="input-field"
+          placeholder="Ваш email"
+          autofocus
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="id_password">Пароль</label>
+        <input
+          type="password"
+          name="password"
+          id="id_password"
+          class="input-field"
+          placeholder="••••••••"
+          required
+        />
+      </div>
+
+      <input type="hidden" name="next" value="{{ next }}" />
+
+      <button type="submit" class="btn-submit">Увійти</button>
+
+      <div class="footer-link">
+        Немає акаунту?
+        <a href="{% url 'user:register' %}">
+          Зареєструватися
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
