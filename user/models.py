@@ -45,17 +45,20 @@ class UserManager(BaseUserManager):
 
 class User(AbstractUser):
     username = None
-    email = models.EmailField(_("email address"), unique=True)
+    first_name = None
+    last_name = None
+
+    email = models.EmailField(_("email address"), unique=True, null=False)
 
     is_teacher = models.BooleanField(default=False)
     is_student = models.BooleanField(default=False)
 
     teacher = models.ForeignKey(
         "self",
-        on_delete=models.SET_NULL,  # Якщо вчителя видалять, учень залишиться, але поле стане NULL
+        on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name="students",  # Дозволить вчителю писати teacher.students.all()
+        related_name="students",
     )
 
     USERNAME_FIELD = "email"
