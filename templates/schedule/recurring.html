@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Регулярний розклад — Mluv{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/schedule.css' %}" />
+{% endblock %}
+
+{% block content %}
+  <div class="page-container">
+    {% include "elements/back_button.html" %}
+
+    {% if messages %}
+      <div class="messages">
+        {% for message in messages %}
+          <div class="message">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <div class="layout-centered">
+      <div class="card">
+        <div class="title">Регулярний розклад</div>
+        <form method="post">
+          {% csrf_token %}
+
+          <div class="form-group">
+            <div class="field-label">Студент</div>
+            {{ form.student }}
+            {% if form.student.errors %}
+              <div class="errors">{{ form.student.errors.0 }}</div>
+            {% endif %}
+          </div>
+
+          <div class="form-group">
+            <div class="field-label">Дні тижня</div>
+            <div class="days-grid">
+              {% for day_val, day_abbr, day_name in day_configs %}
+                <div class="day-row" id="row-{{ day_val }}">
+                  <label class="day-toggle">
+                    <input
+                      type="checkbox"
+                      name="day_{{ day_val }}"
+                      id="chk{{ day_val }}"
+                      onchange="toggleDay({{ day_val }})"
+                    />
+                    <div class="day-chip-box">{{ day_abbr }}</div>
+                    <span class="day-name">{{ day_name }}</span>
+                  </label>
+
+                  <div class="day-fields">
+                    <div class="form-group">
+                      <div class="field-label">Час</div>
+                      <input
+                        type="time"
+                        name="time_{{ day_val }}"
+                        class="input-field"
+                        value="10:00"
+                      />
+                    </div>
+                    <div class="form-group">
+                      <div class="field-label">Тривалість (хв)</div>
+                      <input
+                        type="number"
+                        name="duration_{{ day_val }}"
+                        class="input-field"
+                        value="60"
+                        min="15"
+                        max="240"
+                      />
+                    </div>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+
+            {% if form.non_field_errors %}
+              {% for e in form.non_field_errors %}
+                <div class="errors">{{ e }}</div>
+              {% endfor %}
+            {% endif %}
+          </div>
+
+          <div class="row">
+            <div class="form-group">
+              <div class="field-label">Починаючи з</div>
+              {{ form.start_from }}
+            </div>
+            <div class="form-group">
+              <div class="field-label">На скільки тижнів</div>
+              {{ form.weeks }}
+            </div>
+          </div>
+
+          <div class="preview" id="preview">
+            🌿 Оберіть дні та кількість тижнів
+          </div>
+
+          <button type="submit" class="btn">Запланувати уроки</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function toggleDay(i) {
+      const row = document.getElementById("row-" + i);
+      const chk = document.getElementById("chk" + i);
+      row.classList.toggle("active", chk.checked);
+      updatePreview();
+    }
+
+    function updatePreview() {
+      const days = document.querySelectorAll(".day-row.active").length;
+      const weeks = parseInt(document.querySelector("[name=weeks]").value) || 0;
+      const p = document.getElementById("preview");
+      p.textContent =
+        days && weeks
+          ? "🌿 Буде створено ~" + days * weeks + " урок(ів)"
+          : "🌿 Оберіть дні та кількість тижнів";
+    }
+
+    document
+      .querySelector("[name=weeks]")
+      .addEventListener("input", updatePreview);
+  </script>
+{% endblock %}

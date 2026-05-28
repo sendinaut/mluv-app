@@ -1,0 +1,34 @@
+<div class="public-schedule-section">
+  <div class="card" style="border: 2px dashed rgba(76, 175, 80, 0.3)">
+    <div class="title" style="color: var(--green); display: flex; justify-content: space-between; align-items: center;">
+      <span>🌿 Вільні віконця для запису</span>
+    </div>
+    <div class="table-wrapper" style="box-shadow: none; padding: 0">
+      <table>
+        <thead>
+          <tr>
+            {% for day in days_of_week %}
+            <th style="border-bottom: 2px solid rgba(76, 175, 80, 0.1)">
+              {{ day|date:"D" }}<br />
+              <span style="color: var(--text); font-weight: 600">{{ day|date:"d.m" }}</span>
+            </th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            {% for day_slots in free_schedule %}
+            <td>
+              {% for slot in day_slots %}
+                <div class="free-slot">{{ slot }}</div>
+              {% empty %}
+                <div class="no-slots">Немає вільних місць</div>
+              {% endfor %}
+            </td>
+            {% endfor %}
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

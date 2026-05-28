@@ -7,5 +7,6 @@ from main.views import (
 app_name = "main"
 
 urlpatterns = [
+    path("", menu_view, name="index"),
     path("menu/", menu_view, name="menu"),
 ]

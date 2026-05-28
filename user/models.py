@@ -53,14 +53,6 @@ class User(AbstractUser):
     is_teacher = models.BooleanField(default=False)
     is_student = models.BooleanField(default=False)
 
-    teacher = models.ForeignKey(
-        "self",
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="students",
-    )
-
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
 
@@ -69,11 +61,11 @@ class User(AbstractUser):
 
 class InviteCode(models.Model):
     ROLE_CHOICES = [
-        ("student", "Учень"),
-        ("teacher", "Вчитель"),
+        ("student", "учень"),
+        ("teacher", "вчитель"),
     ]
 
-    code = models.UUIDField(default=uuid.uuid4, unique=True)
+    code = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     invite_role = models.CharField(
         max_length=10, choices=ROLE_CHOICES, default="student"
     )
@@ -91,4 +83,4 @@ class InviteCode(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Invite ({self.invite_role}) by {self.created_by.email} (Used: {self.is_used})"
+        return str(self.code)

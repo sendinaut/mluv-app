@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="uk">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Студенти — Mluv</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #fff9ec;
+        --accent: #ff7b85;
+        --text: #1e1e1e;
+        --card: #ffffff;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: Inter, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        padding: 4vw;
+        -webkit-font-smoothing: antialiased;
+      }
+      .layout {
+        display: grid;
+        grid-template-columns: 300px 1fr;
+        gap: 30px;
+        max-width: 1000px;
+        margin: 0 auto;
+        align-items: start;
+      }
+      .card {
+        background: var(--card);
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.03);
+      }
+      .title {
+        font-family: "Playfair Display", serif;
+        font-size: 22px;
+        font-weight: 600;
+        margin-bottom: 20px;
+      }
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      label {
+        font-size: 12px;
+        font-weight: 600;
+        color: rgba(0, 0, 0, 0.5);
+      }
+      .input-field {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid rgba(0, 0, 0, 0.06);
+        border-radius: 8px;
+        font-size: 14px;
+        font-family: inherit;
+        outline: none;
+        background: var(--bg);
+      }
+      .input-field:focus {
+        border-color: var(--accent);
+        background: var(--card);
+      }
+      .btn {
+        padding: 12px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        background: var(--text);
+        color: white;
+        transition: background 0.2s;
+      }
+      .btn:hover {
+        background: var(--accent);
+      }
+      .btn-danger {
+        background: transparent;
+        color: #e53935;
+        border: 2px solid rgba(229, 57, 53, 0.2);
+      }
+      .btn-danger:hover {
+        background: #e53935;
+        color: white;
+      }
+      .student-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .student-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 16px;
+        background: var(--bg);
+        border-radius: 10px;
+      }
+      .student-name {
+        font-weight: 600;
+        font-size: 14px;
+      }
+      .student-actions {
+        display: flex;
+        gap: 8px;
+      }
+      .action-link {
+        font-size: 12px;
+        font-weight: 600;
+        color: rgba(0, 0, 0, 0.4);
+        text-decoration: none;
+        padding: 6px 10px;
+        border-radius: 6px;
+        transition: all 0.15s;
+      }
+      .action-link:hover {
+        background: var(--accent);
+        color: white;
+      }
+      .empty {
+        font-size: 13px;
+        color: rgba(0, 0, 0, 0.3);
+        font-style: italic;
+        text-align: center;
+        padding: 20px 0;
+      }
+      .messages {
+        max-width: 1000px;
+        margin: 0 auto 20px;
+      }
+      .message {
+        padding: 12px 16px;
+        border-radius: 10px;
+        font-size: 13px;
+        font-weight: 600;
+        background: rgba(76, 175, 80, 0.1);
+        color: #388e3c;
+        border: 1px solid rgba(76, 175, 80, 0.2);
+      }
+      @media (max-width: 700px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    {% include "elements/back_button.html" %} {% if messages %}
+    <div class="messages">
+      {% for message in messages %}
+      <div class="message">{{ message }}</div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="layout">
+      <div class="card">
+        <div class="title">
+          {% if editing %}Редагувати{% else %}Новий студент{% endif %}
+        </div>
+        <form method="post">
+          {% csrf_token %}
+          <div class="form-group">
+            <label>Ім'я</label>
+            {{ form.name }}
+          </div>
+          {% if form.name.errors %}
+          <div style="color: var(--accent); font-size: 12px">
+            {{ form.name.errors.0 }}
+          </div>
+          {% endif %}
+          <button type="submit" class="btn">
+            {% if editing %}Зберегти зміни{% else %}Додати студента{% endif %}
+          </button>
+          {% if editing %}
+          <a
+            href="{% url 'schedule:students' %}"
+            class="btn"
+            style="text-align: center; text-decoration: none; display: block"
+            >Скасувати</a
+          >
+          {% endif %}
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="title">Усі студенти</div>
+        <div class="student-list">
+          {% for student in students %}
+          <div class="student-row">
+            <span class="student-name">{{ student.name }}</span>
+            <div class="student-actions">
+              <a
+                href="{% url 'schedule:student-edit' student.pk %}"
+                class="action-link"
+                >✏️ Редагувати</a
+              >
+              <form
+                method="post"
+                action="{% url 'schedule:student-delete' student.pk %}"
+                style="display: inline"
+              >
+                {% csrf_token %}
+                <button
+                  type="submit"
+                  class="action-link btn-danger"
+                  onclick="return confirm('Видалити «{{ student.name }}»?')"
+                >
+                  🗑 Видалити
+                </button>
+              </form>
+            </div>
+          </div>
+          {% empty %}
+          <div class="empty">Ще немає студентів</div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

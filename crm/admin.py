@@ -1,3 +1,6 @@
 from django.contrib import admin
 
-# Register your models here.
+from crm.models import Student, Lesson
+
+admin.site.register(Student)
+admin.site.register(Lesson)

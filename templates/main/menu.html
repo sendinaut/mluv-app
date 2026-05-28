@@ -24,17 +24,17 @@
       <div class="section-label">Кабінет репетитора</div>
       <div class="grid" style="margin-top: 10px">
 
-        <a href="#" class="card-menu">
+        <a href="{% url "crm:schedule" %}" class="card-menu">
           <div class="name">Розклад</div>
           <div class="meta">Перегляд і редагування тижневого розкладу</div>
         </a>
 
-        <a href="#" class="card-menu">
+        <a href="{% url "crm:students" %}" class="card-menu">
           <div class="name">Мої учні</div>
           <div class="meta">Додавання та редагування студентів</div>
         </a>
 
-        <a href="#" class="card-menu">
+        <a href="{% url "crm:recurring" %}" class="card-menu">
           <div class="name">Планувальник</div>
           <div class="meta">Регулярні уроки на кілька тижнів наперед</div>
         </a>

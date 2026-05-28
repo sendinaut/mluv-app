@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load schedule_extras %}
+
+{% block title %}Розклад уроків — Mluv{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/schedule.css' %}" />
+  <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+{% endblock %}
+
+{% block content %}
+  <div class="page-container">
+    {% include "elements/back_button.html" %}
+
+    <div class="layout">
+      <div class="card" id="lesson-form-container">
+        {% include "partials/lesson_form.html" %}
+      </div>
+
+      <div>
+        {% include "partials/schedule_navigation.html" %}
+        {% include "partials/schedule_main_table.html" %}
+      </div>
+    </div>
+
+    {% include "partials/schedule_free_slots.html" %}
+  </div>
+{% endblock %}

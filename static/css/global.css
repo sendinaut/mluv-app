@@ -1,9 +1,10 @@
 :root {
-  --bg: #fff9ec;
+--bg: #fff9ec;
   --accent: #ff7b85;
   --text: #1e1e1e;
   --card: #ffffff;
-  --error: #f44336;
+  --green: #4caf50;
+  --danger: #dc3545;
 }
 
 * {
