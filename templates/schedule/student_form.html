@@ -61,15 +61,14 @@
 
               <div class="student-actions">
                 {% if not student.invitation_code.is_used and student.invitation_code %}
-                  <button
+                  <a
                     type="button"
                     class="action-link"
-                    style="background: none; border: none; cursor: pointer; font-family: inherit;"
                     data-invite-url="{{ request.scheme }}://{{ request.get_host }}{% url 'user:register' %}?invite={{ student.invitation_code.code }}"
                     onclick="copyInviteLink(this)"
                   >
                     🔗 Посилання
-                  </button>
+                  </a>
                 {% endif %}
 
                 <a href="{% url 'crm:student-edit' student.pk %}" class="action-link">
@@ -99,8 +98,7 @@
 
       navigator.clipboard.writeText(url).then(() => {
         const originalText = button.textContent;
-        button.textContent = '✅ Скопійовано!';
-        button.style.color = 'var(--green)';
+        button.textContent = 'Скопійовано!';
 
         setTimeout(() => {
           button.textContent = originalText;

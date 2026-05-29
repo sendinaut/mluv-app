@@ -57,6 +57,7 @@ class RegistrationForm(UserCreationForm):
         if invite.invite_role == "student":
             user.is_student = True
             user.is_teacher = False
+
         elif invite.invite_role == "teacher":
             user.is_student = False
             user.is_teacher = True
@@ -72,5 +73,10 @@ class RegistrationForm(UserCreationForm):
             invite.is_used = True
             invite.accepted_by = user
             invite.save()
+
+            if invite.invite_role == "student":
+                for student in invite.linked_students.all():
+                    student.student_user = user
+                    student.save()
 
         return user

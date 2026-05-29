@@ -72,7 +72,7 @@ class InviteCode(models.Model):
     created_by = models.ForeignKey(
         get_user_model(), on_delete=models.CASCADE, related_name="created_invites"
     )
-    accepted_by = models.OneToOneField(
+    accepted_by = models.ForeignKey(
         get_user_model(),
         on_delete=models.SET_NULL,
         null=True,

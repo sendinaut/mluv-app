@@ -7,7 +7,6 @@ from django.db.models import F
 
 from user.models import InviteCode
 
-
 User = get_user_model()
 
 
@@ -21,7 +20,7 @@ class Student(models.Model):
         null=False,
     )
     description = models.TextField(blank=True)
-    student_user = models.OneToOneField(
+    student_user = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,
         related_name="student_profile",
@@ -29,7 +28,7 @@ class Student(models.Model):
         null=True,
     )
 
-    invitation_code = models.OneToOneField(
+    invitation_code = models.ForeignKey(
         InviteCode,
         on_delete=models.SET_NULL,
         related_name="linked_students",
