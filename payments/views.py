@@ -3,6 +3,7 @@ from decimal import Decimal
 
 from django.contrib import messages
 from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.views import View
@@ -18,6 +19,7 @@ from .services import MonobankService, validate_sign
 User = get_user_model()
 
 
+@method_decorator(login_required, name="dispatch")
 class StudentBillingView(LoginRequiredMixin, View):
     def get(self, request):
         student_crm = Student.objects.filter(student_user=request.user)
