@@ -8,4 +8,5 @@ urlpatterns = [
     path("", include("user.urls", namespace="user")),
     path("", include("main.urls", namespace="main")),
     path("", include("crm.urls", namespace="crm")),
+    path("", include("payments.urls", namespace="payments")),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
