@@ -1,17 +1,26 @@
 <div class="title">Новий урок</div>
 <form method="post" action="?week={{ current_week_str }}">
   {% csrf_token %}
+
   <div class="form-group">
     <label>Студент</label>
     {{ form.student }}
   </div>
+
   <div class="form-group">
     <label>Дата та час</label>
     {{ form.datetime }}
   </div>
+
   <div class="form-group">
     <label>Тривалість (хв)</label>
     {{ form.duration }}
   </div>
+
+  <div class="form-group">
+    <label>Статус уроку</label>
+    {{ form.lesson_type }}
+  </div>
+
   <button type="submit" class="btn">Додати до розкладу</button>
 </form>

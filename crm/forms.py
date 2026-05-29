@@ -8,7 +8,7 @@ User = get_user_model()
 class LessonCreateForm(forms.ModelForm):
     class Meta:
         model = Lesson
-        fields = ["student", "datetime", "duration"]
+        fields = ["student", "datetime", "duration", "lesson_type"]
         widgets = {
             "datetime": forms.DateTimeInput(
                 format="%Y-%m-%dT%H:%M",
@@ -18,6 +18,7 @@ class LessonCreateForm(forms.ModelForm):
             "duration": forms.NumberInput(
                 attrs={"class": "input-field", "placeholder": "Хвилин (напр. 60)"}
             ),
+            "lesson_type": forms.Select(attrs={"class": "input-field"}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -33,12 +34,25 @@ class LessonCreateForm(forms.ModelForm):
 class StudentForm(forms.ModelForm):
     class Meta:
         model = Student
-        fields = ["name"]
+        fields = ["name", "lessons_count", "lesson_price"]
         widgets = {
             "name": forms.TextInput(
                 attrs={"class": "input-field", "placeholder": "Ім'я студента"}
             ),
+            "lessons_count": forms.NumberInput(
+                attrs={"class": "input-field", "placeholder": "Баланс занять", "min": "0"}
+            ),
+            "lesson_price": forms.NumberInput(
+                attrs={"class": "input-field", "placeholder": "Ціна за одне заняття", "step": "0.01", "min": "0"}
+            ),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['lessons_count'].widget.attrs.update({
+            'class': 'input-field',
+            'min': '-999',
+        })
 
 
 WEEKDAY_CHOICES = [

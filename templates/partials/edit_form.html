@@ -1,17 +1,25 @@
 <div class="title" style="color: var(--accent);">Редагувати урок</div>
 <form method="post" action="{% url 'crm:edit_lesson' lesson.id %}?week={{ current_week_str }}">
   {% csrf_token %}
+
   <div class="form-group">
     <label>Студент</label>
     {{ form.student }}
   </div>
+
   <div class="form-group">
     <label>Дата та час</label>
     {{ form.datetime }}
   </div>
+
   <div class="form-group">
     <label>Тривалість (хв)</label>
     {{ form.duration }}
+  </div>
+
+  <div class="form-group">
+    <label>Статус уроку</label>
+    {{ form.lesson_type }}
   </div>
 
   <button type="submit" class="btn">Зберегти зміни</button>

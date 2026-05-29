@@ -3,7 +3,6 @@ from datetime import timedelta
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models import F
 
 from user.models import InviteCode
 
@@ -37,6 +36,9 @@ class Student(models.Model):
         editable=False,
     )
 
+    lessons_count = models.IntegerField(default=0)
+    lesson_price = models.DecimalField(default=400, null=False, blank=False, max_digits=10, decimal_places=2)
+
     def __str__(self):
         return self.name
 
@@ -57,13 +59,22 @@ class Student(models.Model):
         super().save(*args, **kwargs)
 
 
+class LessonStatus(models.TextChoices):
+    PLANNED = "PLANNED"
+    FINISHED = "FINISHED"
+    CANCELED = "CANCELED"
+
+
 class Lesson(models.Model):
     teacher = models.ForeignKey(User, on_delete=models.CASCADE, related_name="lessons")
     student = models.ForeignKey(
         Student, on_delete=models.CASCADE, related_name="lessons"
     )
-    datetime = models.DateTimeField(verbose_name="Дата та час")
-    duration = models.PositiveIntegerField(verbose_name="Тривалість (хв)")
+
+    datetime = models.DateTimeField()
+    duration = models.PositiveIntegerField()
+
+    lesson_type = models.CharField(choices=LessonStatus.choices, default=LessonStatus.PLANNED, max_length=10)
 
     def __str__(self):
         return f"Урок {self.student.name} ({self.datetime.strftime('%d.%m %H:%M')})"

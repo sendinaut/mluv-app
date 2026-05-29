@@ -1,0 +1,38 @@
+.student-meta {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.4);
+  font-weight: 500;
+  display: flex;
+  gap: 12px;
+  margin-top: 4px;
+}
+.badge-balance {
+  color: #2ecc71;
+  font-weight: 600;
+}
+.student-info {
+  display: flex;
+  flex-direction: column;
+}
+.btn-cancel-link {
+  text-align: center;
+  text-decoration: none;
+  display: block;
+  margin-top: 8px;
+  background-color: transparent;
+  color: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+.btn-cancel-link:hover {
+  background-color: rgba(0, 0, 0, 0.02);
+  color: var(--text);
+}
+.btn-danger-action {
+  background: transparent;
+  color: #e53935;
+  border: 1px solid rgba(229, 57, 53, 0.15) !important;
+}
+.btn-danger-action:hover {
+  background: #e53935 !important;
+  color: white !important;
+}

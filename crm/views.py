@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta
 from django.contrib import messages
-from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.decorators import method_decorator
@@ -33,28 +32,22 @@ class LessonScheduleView(View):
         end_of_week = start_of_week + timedelta(days=6)
         return start_of_week, end_of_week
 
-    def get(self, request):
-        selected_week = request.GET.get("week")
-        start_date, end_date = self.get_week_bounds(selected_week)
+    def _get_schedule_context(self, request, current_week_str):
+        """Внутрішній метод для уникнення дублювання логіки в GET та POST"""
+        start_date, end_date = self.get_week_bounds(current_week_str)
 
         lessons = Lesson.objects.filter(
             teacher=request.user, datetime__date__range=[start_date, end_date]
         ).order_by("datetime")
 
-        days_of_week = []
-        for i in range(7):
-            days_of_week.append(start_date + timedelta(days=i))
-
+        days_of_week = [start_date + timedelta(days=i) for i in range(7)]
         prev_week = (start_date - timedelta(weeks=1)).strftime("%Y-W%W")
         next_week = (start_date + timedelta(weeks=1)).strftime("%Y-W%W")
-        current_week_str = start_date.strftime("%Y-W%W")
-
-        form = LessonCreateForm(user=request.user)
 
         WORKING_HOURS = range(9, 21)
-
         schedule_by_day = {}
         free_slots_by_day = {}
+
         for day in days_of_week:
             free_slots_by_day[day] = []
             day_lessons = sorted(
@@ -64,12 +57,10 @@ class LessonScheduleView(View):
 
             items = []
             prev_end_hour = 9
-
             free_hours = []
+
             for hour in WORKING_HOURS:
-                slot_start = datetime.combine(
-                    day, datetime.min.time().replace(hour=hour)
-                )
+                slot_start = datetime.combine(day, datetime.min.time().replace(hour=hour))
                 slot_end = slot_start + timedelta(hours=1)
                 is_free = True
                 for lesson in day_lessons:
@@ -90,29 +81,24 @@ class LessonScheduleView(View):
                     lesson_end_hour += 1
 
                 if lesson_start_hour > prev_end_hour:
-                    items.append(
-                        {
-                            "type": "window",
-                            "label": f"{prev_end_hour:02d}:00 – {lesson_start_hour:02d}:00",
-                        }
-                    )
+                    items.append({
+                        "type": "window",
+                        "label": f"{prev_end_hour:02d}:00 – {lesson_start_hour:02d}:00",
+                    })
 
                 items.append({"type": "lesson", "obj": lesson})
                 prev_end_hour = lesson_end_hour
 
             if prev_end_hour < 21:
-                items.append(
-                    {"type": "window", "label": f"{prev_end_hour:02d}:00 – 21:00"}
-                )
+                items.append({"type": "window", "label": f"{prev_end_hour:02d}:00 – 21:00"})
 
             schedule_by_day[day] = items
 
         free_schedule = [free_slots_by_day[day] for day in days_of_week]
 
-        context = {
+        return {
             "lessons": lessons,
             "days_of_week": days_of_week,
-            "form": form,
             "prev_week": prev_week,
             "next_week": next_week,
             "current_week_str": current_week_str,
@@ -122,6 +108,11 @@ class LessonScheduleView(View):
             "free_slots_by_day": free_slots_by_day,
             "schedule_by_day": schedule_by_day,
         }
+
+    def get(self, request):
+        selected_week = request.GET.get("week")
+        context = self._get_schedule_context(request, selected_week)
+        context["form"] = LessonCreateForm(user=request.user)
         return render(request, self.template_name, context)
 
     def post(self, request):
@@ -133,89 +124,16 @@ class LessonScheduleView(View):
             saved_lesson = form.save(commit=False)
             saved_lesson.teacher = request.user
             if form.cleaned_data.get("is_blockout"):
-                saved_lesson.student = Student.objects.get_or_create(
+                blockout_student, _ = Student.objects.get_or_create(
                     name="🔒 Зайнято / Блок", teacher=request.user
                 )
+                saved_lesson.student = blockout_student
             saved_lesson.save()
             return redirect(f"/schedule/?week={current_week_str}")
 
-        start_date, end_date = self.get_week_bounds(current_week_str)
-        lessons = Lesson.objects.filter(
-            teacher=request.user, datetime__date__range=[start_date, end_date]
-        ).order_by("datetime")
-
-        start_date, end_date = self.get_week_bounds(current_week_str)
-        lessons = Lesson.objects.filter(
-            teacher=request.user, datetime__date__range=[start_date, end_date]
-        ).order_by("datetime")
-
-        days_of_week = [start_date + timedelta(days=i) for i in range(7)]
-        prev_week = (start_date - timedelta(weeks=1)).strftime("%Y-W%W")
-        next_week = (start_date + timedelta(weeks=1)).strftime("%Y-W%W")
-        WORKING_HOURS = range(9, 21)
-
-        schedule_by_day = {}
-        free_slots_by_day = {}
-        for day in days_of_week:
-            free_slots_by_day[day] = []
-            day_lessons = sorted(
-                [l for l in lessons if l.datetime.date() == day],
-                key=lambda l: l.datetime,
-            )
-            items = []
-            prev_end_hour = 9
-            free_hours = []
-            for hour in WORKING_HOURS:
-                slot_start = datetime.combine(
-                    day, datetime.min.time().replace(hour=hour)
-                )
-                slot_end = slot_start + timedelta(hours=1)
-                is_free = True
-                for lesson in day_lessons:
-                    lesson_start = lesson.datetime
-                    lesson_end = lesson_start + timedelta(minutes=lesson.duration)
-                    if not (slot_end <= lesson_start or slot_start >= lesson_end):
-                        is_free = False
-                        break
-                if is_free:
-                    free_hours.append(hour)
-            free_slots_by_day[day] = [f"{h:02d}:00" for h in free_hours]
-
-            for lesson in day_lessons:
-                lesson_start_hour = lesson.datetime.hour
-                lesson_end_hour = lesson.datetime.hour + lesson.duration // 60
-                if lesson.duration % 60:
-                    lesson_end_hour += 1
-                if lesson_start_hour > prev_end_hour:
-                    items.append(
-                        {
-                            "type": "window",
-                            "label": f"{prev_end_hour:02d}:00 – {lesson_start_hour:02d}:00",
-                        }
-                    )
-                items.append({"type": "lesson", "obj": lesson})
-                prev_end_hour = lesson_end_hour
-            if prev_end_hour < 21:
-                items.append(
-                    {"type": "window", "label": f"{prev_end_hour:02d}:00 – 21:00"}
-                )
-            schedule_by_day[day] = items
-
-        free_schedule = [free_slots_by_day[day] for day in days_of_week]
-
-        context = {
-            "lessons": lessons,
-            "days_of_week": days_of_week,
-            "form": form,
-            "prev_week": prev_week,
-            "next_week": next_week,
-            "current_week_str": current_week_str,
-            "start_date": start_date,
-            "end_date": end_date,
-            "free_schedule": free_schedule,
-            "free_slots_by_day": free_slots_by_day,
-            "schedule_by_day": schedule_by_day,
-        }
+        # Якщо форма невалідна, рендеримо розклад назад із помилками форми
+        context = self._get_schedule_context(request, current_week_str)
+        context["form"] = form
         return render(request, self.template_name, context)
 
 
@@ -224,9 +142,7 @@ class StudentCreateView(View):
     template_name = "schedule/student_form.html"
 
     def get(self, request, pk=None):
-        student = (
-            get_object_or_404(Student, pk=pk, teacher=request.user) if pk else None
-        )
+        student = get_object_or_404(Student, pk=pk, teacher=request.user) if pk else None
         form = StudentForm(instance=student)
         students = Student.objects.filter(teacher=request.user).order_by("name")
         return render(
@@ -240,14 +156,12 @@ class StudentCreateView(View):
         )
 
     def post(self, request, pk=None):
-        student = (
-            get_object_or_404(Student, pk=pk, teacher=request.user) if pk else None
-        )
+        student = get_object_or_404(Student, pk=pk, teacher=request.user) if pk else None
         form = StudentForm(request.POST, instance=student)
         if form.is_valid():
             s = form.save(commit=False)
             s.teacher = request.user
-            s.save()
+            s.save()  # Поля lessons_count та lesson_price збережуться автоматично
             return redirect("crm:students")
 
         students = Student.objects.filter(teacher=request.user).order_by("name")
@@ -321,13 +235,16 @@ class RecurringScheduleView(View):
                     student=student,
                     datetime=lesson_dt,
                 ).exists()
+
                 if not exists:
+                    # Зміна тут: Явно вказуємо дефолтний статус "PLANNED" для нових занять
                     created.append(
                         Lesson.objects.create(
                             teacher=request.user,
                             student=student,
                             datetime=lesson_dt,
                             duration=duration,
+                            lesson_type="PLANNED"  # Або імпортуй LessonStatus та використовуй LessonStatus.PLANNED
                         )
                     )
 
