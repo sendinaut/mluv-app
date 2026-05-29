@@ -68,6 +68,7 @@ class StudentBillingView(LoginRequiredMixin, View):
                 lessons_quantity=lessons_count,
                 price_per_lesson=price_per_lesson,
                 status=Status.PENDING,
+                student=student,
             )
 
             try:
@@ -115,7 +116,10 @@ class MonobankWebhookView(View):
 
             if status == "success":
                 order.status = Status.PAID
+                order.student.lessons_count += order.lessons_quantity
                 order.fiscal_status = FiscalStatus.PENDING
+
+                order.student.save()
                 order.save()
 
                 wallet_data = data.get("walletData", {})
@@ -136,4 +140,5 @@ class MonobankWebhookView(View):
             return HttpResponse("OK", status=200)
 
         except Exception as e:
+            print(e)
             return HttpResponse(f"Error: {str(e)}", status=400)

@@ -69,8 +69,6 @@ def validate_sign(x_sign_base64: str, body_bytes: bytes) -> bool:
         )
         pub_key_base64 = ""
 
-        print(pubkey_response.json())
-
         if pubkey_response.status_code == 200:
             pub_key_base64 = pubkey_response.json().get("key")
             if not pub_key_base64:
