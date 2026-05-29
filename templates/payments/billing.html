@@ -5,6 +5,25 @@
 
 {% block extra_css %}
   <link rel="stylesheet" href="{% static 'css/schedule.css' %}" />
+  <style>
+    .tutor-meta-container {
+      display: flex;
+      gap: 12px;
+      font-size: 12px;
+      color: rgba(0,0,0,0.4);
+      margin-top: 4px;
+      align-items: center;
+    }
+    .balance-badge {
+      font-weight: 600;
+    }
+    .balance-positive {
+      color: #2ecc71;
+    }
+    .balance-negative {
+      color: #e53935;
+    }
+  </style>
 {% endblock %}
 
 {% block content %}
@@ -98,8 +117,18 @@
               <div class="student-row">
                 <div>
                   <span class="student-name">{{ student.teacher.full_name|default:student.teacher.email }}</span>
-                  <div style="font-size: 12px; color: rgba(0,0,0,0.4); margin-top: 2px;">
-                    Ціна за урок: <span class="tutor-price" data-price="{{ student.lesson_price|default:0 }}">{{ student.lesson_price|default:0 }}</span> ₴
+
+                  <div class="tutor-meta-container">
+                    <div>
+                      Ціна за урок: <span class="tutor-price" data-price="{{ student.lesson_price|default:0 }}">{{ student.lesson_price|default:0 }}</span> ₴
+                    </div>
+                    <div>•</div>
+                    <div>
+                      Поточний баланс:
+                      <span class="balance-badge {% if student.lessons_count > 0 %}balance-positive{% else %}balance-negative{% endif %}">
+                        {{ student.lessons_count|default:0 }} уроків
+                      </span>
+                    </div>
                   </div>
                 </div>
 
