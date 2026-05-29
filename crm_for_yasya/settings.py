@@ -28,6 +28,7 @@ ALLOWED_HOSTS = [
 
 CSRF_TRUSTED_ORIGINS = [
     BASE_URL,
+    BASE_URL.replace("https://", "http://"),
 ]
 
 # Application definition
