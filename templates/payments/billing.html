@@ -94,12 +94,12 @@
           <div class="field-label" style="margin-bottom: 12px;">Заняття</div>
 
           <div class="student-list">
-            {% for tutor in tutors %}
+            {% for student in student_crm %}
               <div class="student-row">
                 <div>
-                  <span class="student-name">{{ tutor.full_name|default:tutor.email }}</span>
+                  <span class="student-name">{{ student.teacher.full_name|default:student.teacher.email }}</span>
                   <div style="font-size: 12px; color: rgba(0,0,0,0.4); margin-top: 2px;">
-                    Ціна за урок: <span class="tutor-price" data-price="{{ tutor.lesson_price|default:400 }}">{{ tutor.lesson_price|default:400 }}</span> ₴
+                    Ціна за урок: <span class="tutor-price" data-price="{{ student.lesson_price|default:0 }}">{{ student.lesson_price|default:0 }}</span> ₴
                   </div>
                 </div>
 
@@ -108,7 +108,7 @@
                     type="button"
                     class="btn"
                     style="padding: 8px 16px; font-size: 13px;"
-                    onclick="processTutorPayment('{{ tutor.pk }}')"
+                    onclick="processTutorPayment('{{ student.teacher.pk }}')"
                   >
                     Сплатити <span class="btn-total-price"></span>
                   </button>

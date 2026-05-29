@@ -60,7 +60,9 @@ class LessonScheduleView(View):
             free_hours = []
 
             for hour in WORKING_HOURS:
-                slot_start = datetime.combine(day, datetime.min.time().replace(hour=hour))
+                slot_start = datetime.combine(
+                    day, datetime.min.time().replace(hour=hour)
+                )
                 slot_end = slot_start + timedelta(hours=1)
                 is_free = True
                 for lesson in day_lessons:
@@ -81,16 +83,20 @@ class LessonScheduleView(View):
                     lesson_end_hour += 1
 
                 if lesson_start_hour > prev_end_hour:
-                    items.append({
-                        "type": "window",
-                        "label": f"{prev_end_hour:02d}:00 – {lesson_start_hour:02d}:00",
-                    })
+                    items.append(
+                        {
+                            "type": "window",
+                            "label": f"{prev_end_hour:02d}:00 – {lesson_start_hour:02d}:00",
+                        }
+                    )
 
                 items.append({"type": "lesson", "obj": lesson})
                 prev_end_hour = lesson_end_hour
 
             if prev_end_hour < 21:
-                items.append({"type": "window", "label": f"{prev_end_hour:02d}:00 – 21:00"})
+                items.append(
+                    {"type": "window", "label": f"{prev_end_hour:02d}:00 – 21:00"}
+                )
 
             schedule_by_day[day] = items
 
@@ -142,7 +148,9 @@ class StudentCreateView(View):
     template_name = "schedule/student_form.html"
 
     def get(self, request, pk=None):
-        student = get_object_or_404(Student, pk=pk, teacher=request.user) if pk else None
+        student = (
+            get_object_or_404(Student, pk=pk, teacher=request.user) if pk else None
+        )
         form = StudentForm(instance=student)
         students = Student.objects.filter(teacher=request.user).order_by("name")
         return render(
@@ -156,7 +164,9 @@ class StudentCreateView(View):
         )
 
     def post(self, request, pk=None):
-        student = get_object_or_404(Student, pk=pk, teacher=request.user) if pk else None
+        student = (
+            get_object_or_404(Student, pk=pk, teacher=request.user) if pk else None
+        )
         form = StudentForm(request.POST, instance=student)
         if form.is_valid():
             s = form.save(commit=False)
@@ -244,7 +254,7 @@ class RecurringScheduleView(View):
                             student=student,
                             datetime=lesson_dt,
                             duration=duration,
-                            lesson_type="PLANNED"  # Або імпортуй LessonStatus та використовуй LessonStatus.PLANNED
+                            lesson_type="PLANNED",  # Або імпортуй LessonStatus та використовуй LessonStatus.PLANNED
                         )
                     )
 

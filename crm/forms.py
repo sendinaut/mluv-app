@@ -40,19 +40,30 @@ class StudentForm(forms.ModelForm):
                 attrs={"class": "input-field", "placeholder": "Ім'я студента"}
             ),
             "lessons_count": forms.NumberInput(
-                attrs={"class": "input-field", "placeholder": "Баланс занять", "min": "0"}
+                attrs={
+                    "class": "input-field",
+                    "placeholder": "Баланс занять",
+                    "min": "0",
+                }
             ),
             "lesson_price": forms.NumberInput(
-                attrs={"class": "input-field", "placeholder": "Ціна за одне заняття", "step": "0.01", "min": "0"}
+                attrs={
+                    "class": "input-field",
+                    "placeholder": "Ціна за одне заняття",
+                    "step": "0.01",
+                    "min": "0",
+                }
             ),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['lessons_count'].widget.attrs.update({
-            'class': 'input-field',
-            'min': '-999',
-        })
+        self.fields["lessons_count"].widget.attrs.update(
+            {
+                "class": "input-field",
+                "min": "-999",
+            }
+        )
 
 
 WEEKDAY_CHOICES = [

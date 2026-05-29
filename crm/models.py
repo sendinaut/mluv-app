@@ -37,7 +37,9 @@ class Student(models.Model):
     )
 
     lessons_count = models.IntegerField(default=0)
-    lesson_price = models.DecimalField(default=400, null=False, blank=False, max_digits=10, decimal_places=2)
+    lesson_price = models.DecimalField(
+        default=400, null=False, blank=False, max_digits=10, decimal_places=2
+    )
 
     def __str__(self):
         return self.name
@@ -74,7 +76,9 @@ class Lesson(models.Model):
     datetime = models.DateTimeField()
     duration = models.PositiveIntegerField()
 
-    lesson_type = models.CharField(choices=LessonStatus.choices, default=LessonStatus.PLANNED, max_length=10)
+    lesson_type = models.CharField(
+        choices=LessonStatus.choices, default=LessonStatus.PLANNED, max_length=10
+    )
 
     def __str__(self):
         return f"Урок {self.student.name} ({self.datetime.strftime('%d.%m %H:%M')})"

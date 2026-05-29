@@ -24,8 +24,6 @@ class StudentBillingView(LoginRequiredMixin, View):
         if not student_crm.exists():
             return HttpResponse("Профіль студента не знайдено в CRM", status=404)
 
-        tutors = list({student.teacher for student in student_crm if student.teacher})
-
         form = PaymentInformationForm(
             initial={
                 "email": request.user.email,
@@ -37,14 +35,10 @@ class StudentBillingView(LoginRequiredMixin, View):
         return render(
             request,
             "payments/billing.html",
-            {"form": form, "tutors": tutors, "student_crm": student_crm},
+            {"form": form, "student_crm": student_crm},
         )
 
     def post(self, request):
-        student_crm = Student.objects.filter(student_user=request.user)
-        if not student_crm.exists():
-            return HttpResponse("Профіль студента не знайдено в CRM", status=404)
-
         form = PaymentInformationForm(request.POST)
 
         if form.is_valid():
@@ -57,13 +51,9 @@ class StudentBillingView(LoginRequiredMixin, View):
                 messages.error(request, "Будь ласка, оберіть репетитора.")
                 return redirect("payments:billing")
 
-            tutor = get_user_model().objects.get(id=tutor_id)
-
-            if not tutor:
-                messages.error(
-                    request, "Вказаний репетитор не зв'язаний з вашим профілем."
-                )
-                return redirect("payments:billing")
+            student = Student.objects.get(
+                teacher_id=tutor_id, student_user=request.user
+            )
 
             user = request.user
             user.email = form.cleaned_data["email"]
@@ -71,7 +61,7 @@ class StudentBillingView(LoginRequiredMixin, View):
             user.phone_number = form.cleaned_data["phone_number"]
             user.save()
 
-            price_per_lesson = getattr(tutor, "lesson_price", Decimal("400.00"))
+            price_per_lesson = getattr(student, "lesson_price", Decimal("0.00"))
 
             order = Order.objects.create(
                 user=user,
