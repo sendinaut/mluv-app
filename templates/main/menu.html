@@ -54,6 +54,19 @@
       </div>
     </div>
     {% endif %}
+
+    {% if user.is_superuser %}
+    <div style="margin-top: 10px;">
+      <div class="section-label">Кабінет менеджера</div>
+      <div class="grid" style="margin-top: 10px">
+        <a href="/admin/" class="card-menu">
+          <div class="name">Мій кабінет</div>
+          <div class="meta">Django admin panel</div>
+        </a>
+      </div>
+    </div>
+    {% endif %}
+
   </div>
 </div>
 {% endblock %}
