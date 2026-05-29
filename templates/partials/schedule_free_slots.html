@@ -2,13 +2,13 @@
 
 <div class="public-schedule-section">
   <div class="schedule-controls" style="margin-bottom: 12px; display: flex; gap: 10px; justify-content: flex-end;">
-  <button type="button" class="btn btn-secondary" onclick="resetSchedule()" style="padding: 6px 12px; font-size: 13px; background-color: #7f8c8d; color: white; border: none; border-radius: 6px; cursor: pointer;">
-    Очистити
-  </button>
-  <button type="button" class="btn btn-primary" onclick="copyScheduleToClipboard()" style="padding: 6px 12px; font-size: 13px; background-color: var(--green, #4CAF50); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
-    Експорт
-  </button>
-</div>
+    <button type="button" class="btn btn-secondary" onclick="resetSchedule()" style="padding: 6px 12px; font-size: 13px; background-color: #7f8c8d; color: white; border: none; border-radius: 6px; cursor: pointer;">
+      Очистити
+    </button>
+    <button type="button" class="btn btn-primary" onclick="copyScheduleToClipboard(event)" style="padding: 6px 12px; font-size: 13px; background-color: var(--green, #4CAF50); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
+      Експорт
+    </button>
+  </div>
 
   <div id="schedule-capture-area" class="card" style="border: 2px dashed rgba(76, 175, 80, 0.3); background-color: #ffffff; padding: 20px; border-radius: 12px;">
     <div class="title" style="color: var(--green); display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
@@ -32,9 +32,10 @@
             <td style="vertical-align: top; padding: 8px; width: 14.28%;">
               {% for slot in day_slots %}
                 <div class="free-slot"
-                     onclick="hideSlot(this)"
+                     onmousedown="handleSlotMouseDown(this)"
+                     onmouseenter="handleSlotMouseEnter(this)"
                      style="cursor: pointer; transition: all 0.2s ease; margin-bottom: 6px; user-select: none;"
-                     title="Натисніть, щоб приховати">
+                     title="Проведіть затиснутою мишкою, щоб приховати">
                   {{ slot }}
                 </div>
               {% empty %}
@@ -50,7 +51,19 @@
 </div>
 
 <script>
+  let isMouseDown = false;
+
+  window.addEventListener('mousedown', (e) => {
+    if (e.button === 0) isMouseDown = true;
+  });
+
+  window.addEventListener('mouseup', () => {
+    isMouseDown = false;
+  });
+
   function hideSlot(slotElement) {
+    if (slotElement.style.opacity === '0') return;
+
     slotElement.style.opacity = '0';
     slotElement.style.transform = 'scale(0.8)';
     slotElement.style.pointerEvents = 'none';
@@ -59,6 +72,26 @@
       slotElement.style.display = 'none';
     }, 200);
   }
+
+  function handleSlotMouseDown(slotElement) {
+    hideSlot(slotElement);
+  }
+
+  function handleSlotMouseEnter(slotElement) {
+    if (isMouseDown) {
+      hideSlot(slotElement);
+    }
+  }
+
+  document.getElementById('schedule-capture-area').addEventListener('touchmove', (e) => {
+    const touch = e.touches[0];
+    const element = document.elementFromPoint(touch.clientX, touch.clientY);
+
+    if (element && element.classList.contains('free-slot')) {
+      hideSlot(element);
+    }
+  }, { passive: true });
+
 
   function resetSchedule() {
     document.querySelectorAll('.free-slot').forEach(slot => {
@@ -71,14 +104,13 @@
     });
   }
 
-  function copyScheduleToClipboard() {
+  function copyScheduleToClipboard(event) {
     const target = document.getElementById('schedule-capture-area');
     const copyBtn = event.currentTarget;
     const originalText = copyBtn.textContent;
 
     copyBtn.textContent = 'Генерується...';
     copyBtn.disabled = true;
-
 
     html2canvas(target, {
       scale: 2,
