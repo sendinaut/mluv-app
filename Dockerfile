@@ -15,4 +15,6 @@ COPY . /app
 ENV UV_NO_DEV=1
 
 WORKDIR /app
+RUN chmod +x /start.sh
 RUN uv sync --locked
+
