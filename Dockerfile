@@ -15,6 +15,9 @@ COPY . /app
 ENV UV_NO_DEV=1
 
 WORKDIR /app
-RUN chmod +x /start.sh
+
+RUN chmod 755 start.sh
+
 RUN uv sync --locked
 
+ENTRYPOINT ["./start.sh"]
