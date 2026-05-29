@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.decorators import method_decorator
 from django.views import View
 
-from crm.models import Lesson, Student
+from crm.models import Lesson, Student, LessonStatus
 from crm.forms import (
     LessonCreateForm,
     StudentForm,
@@ -33,7 +33,6 @@ class LessonScheduleView(View):
         return start_of_week, end_of_week
 
     def _get_schedule_context(self, request, current_week_str):
-        """Внутрішній метод для уникнення дублювання логіки в GET та POST"""
         start_date, end_date = self.get_week_bounds(current_week_str)
 
         lessons = Lesson.objects.filter(
@@ -129,15 +128,9 @@ class LessonScheduleView(View):
         if form.is_valid():
             saved_lesson = form.save(commit=False)
             saved_lesson.teacher = request.user
-            if form.cleaned_data.get("is_blockout"):
-                blockout_student, _ = Student.objects.get_or_create(
-                    name="🔒 Зайнято / Блок", teacher=request.user
-                )
-                saved_lesson.student = blockout_student
             saved_lesson.save()
             return redirect(f"/schedule/?week={current_week_str}")
 
-        # Якщо форма невалідна, рендеримо розклад назад із помилками форми
         context = self._get_schedule_context(request, current_week_str)
         context["form"] = form
         return render(request, self.template_name, context)
@@ -247,14 +240,13 @@ class RecurringScheduleView(View):
                 ).exists()
 
                 if not exists:
-                    # Зміна тут: Явно вказуємо дефолтний статус "PLANNED" для нових занять
                     created.append(
                         Lesson.objects.create(
                             teacher=request.user,
                             student=student,
                             datetime=lesson_dt,
                             duration=duration,
-                            lesson_type="PLANNED",  # Або імпортуй LessonStatus та використовуй LessonStatus.PLANNED
+                            status=LessonStatus.PLANNED,
                         )
                     )
 
@@ -302,7 +294,12 @@ def edit_lesson(request, lesson_id):
 def delete_lesson(request, lesson_id):
     lesson = get_object_or_404(Lesson, id=lesson_id, teacher=request.user)
     current_week_str = request.GET.get("week", "")
+    if lesson.status != LessonStatus.PLANNED:
+        lesson.student.lessons_count += 1
+        lesson.student.save()
+
     lesson.delete()
+
     return redirect(f"/schedule/?week={current_week_str}")
 
 

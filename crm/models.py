@@ -76,7 +76,7 @@ class Lesson(models.Model):
     datetime = models.DateTimeField()
     duration = models.PositiveIntegerField()
 
-    lesson_type = models.CharField(
+    status = models.CharField(
         choices=LessonStatus.choices, default=LessonStatus.PLANNED, max_length=10
     )
 
@@ -93,16 +93,20 @@ class Lesson(models.Model):
         new_end = new_start + timedelta(minutes=self.duration)
 
         overlapping_lessons = Lesson.objects.filter(
-            teacher_id=self.teacher_id, datetime__lt=new_end
-        )
+            teacher_id=self.teacher_id,
+            datetime__lt=new_end,
+            datetime__day=new_start.day,
+        ).exclude(status="CANCELED")
 
         if self.pk:
             overlapping_lessons = overlapping_lessons.exclude(pk=self.pk)
 
-        if overlapping_lessons.exists():
-            conflict = overlapping_lessons.first()
-            raise ValidationError(
-                {
-                    "datetime": f"У цей час уже є заняття! Перетин з уроком о {conflict.datetime.strftime('%H:%M')}."
-                }
-            )
+        for lesson in overlapping_lessons:
+            lesson_end = lesson.datetime + timedelta(minutes=lesson.duration)
+
+            if lesson_end > new_start:
+                raise ValidationError(
+                    {
+                        "datetime": f"У цей час уже є заняття! Перетин з уроком о {lesson.datetime.strftime('%H:%M')}."
+                    }
+                )

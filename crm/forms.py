@@ -8,7 +8,7 @@ User = get_user_model()
 class LessonCreateForm(forms.ModelForm):
     class Meta:
         model = Lesson
-        fields = ["student", "datetime", "duration", "lesson_type"]
+        fields = ["student", "datetime", "duration", "status"]
         widgets = {
             "datetime": forms.DateTimeInput(
                 format="%Y-%m-%dT%H:%M",
@@ -18,7 +18,7 @@ class LessonCreateForm(forms.ModelForm):
             "duration": forms.NumberInput(
                 attrs={"class": "input-field", "placeholder": "Хвилин (напр. 60)"}
             ),
-            "lesson_type": forms.Select(attrs={"class": "input-field"}),
+            "status": forms.Select(attrs={"class": "input-field"}),
         }
 
     def __init__(self, *args, **kwargs):
