@@ -1,14 +1,25 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
 <div class="public-schedule-section">
-  <div class="card" style="border: 2px dashed rgba(76, 175, 80, 0.3)">
-    <div class="title" style="color: var(--green); display: flex; justify-content: space-between; align-items: center;">
-      <span>🌿 Вільні віконця для запису</span>
+  <div class="schedule-controls" style="margin-bottom: 12px; display: flex; gap: 10px; justify-content: flex-end;">
+  <button type="button" class="btn btn-secondary" onclick="resetSchedule()" style="padding: 6px 12px; font-size: 13px; background-color: #7f8c8d; color: white; border: none; border-radius: 6px; cursor: pointer;">
+    Очистити
+  </button>
+  <button type="button" class="btn btn-primary" onclick="copyScheduleToClipboard()" style="padding: 6px 12px; font-size: 13px; background-color: var(--green, #4CAF50); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
+    Експорт
+  </button>
+</div>
+
+  <div id="schedule-capture-area" class="card" style="border: 2px dashed rgba(76, 175, 80, 0.3); background-color: #ffffff; padding: 20px; border-radius: 12px;">
+    <div class="title" style="color: var(--green); display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+      <span style="font-size: 18px; font-weight: bold;">🌿 Вільні віконця для запису</span>
     </div>
-    <div class="table-wrapper" style="box-shadow: none; padding: 0">
-      <table>
+    <div class="table-wrapper" style="box-shadow: none; padding: 0; background: transparent;">
+      <table style="width: 100%; border-collapse: collapse;">
         <thead>
           <tr>
             {% for day in days_of_week %}
-            <th style="border-bottom: 2px solid rgba(76, 175, 80, 0.1)">
+            <th style="border-bottom: 2px solid rgba(76, 175, 80, 0.1); padding: 8px; text-align: center;">
               {{ day|date:"D" }}<br />
               <span style="color: var(--text); font-weight: 600">{{ day|date:"d.m" }}</span>
             </th>
@@ -18,11 +29,16 @@
         <tbody>
           <tr>
             {% for day_slots in free_schedule %}
-            <td>
+            <td style="vertical-align: top; padding: 8px; width: 14.28%;">
               {% for slot in day_slots %}
-                <div class="free-slot">{{ slot }}</div>
+                <div class="free-slot"
+                     onclick="hideSlot(this)"
+                     style="cursor: pointer; transition: all 0.2s ease; margin-bottom: 6px; user-select: none;"
+                     title="Натисніть, щоб приховати">
+                  {{ slot }}
+                </div>
               {% empty %}
-                <div class="no-slots">Немає вільних місць</div>
+                <div class="no-slots" style="color: rgba(0,0,0,0.3); font-size: 12px; text-align: center; padding: 4px 0;">Немає вільних місць</div>
               {% endfor %}
             </td>
             {% endfor %}
@@ -32,3 +48,72 @@
     </div>
   </div>
 </div>
+
+<script>
+  function hideSlot(slotElement) {
+    slotElement.style.opacity = '0';
+    slotElement.style.transform = 'scale(0.8)';
+    slotElement.style.pointerEvents = 'none';
+
+    setTimeout(() => {
+      slotElement.style.display = 'none';
+    }, 200);
+  }
+
+  function resetSchedule() {
+    document.querySelectorAll('.free-slot').forEach(slot => {
+      slot.style.display = 'block';
+      setTimeout(() => {
+        slot.style.opacity = '1';
+        slot.style.transform = 'scale(1)';
+        slot.style.pointerEvents = 'auto';
+      }, 10);
+    });
+  }
+
+  function copyScheduleToClipboard() {
+    const target = document.getElementById('schedule-capture-area');
+    const copyBtn = event.currentTarget;
+    const originalText = copyBtn.textContent;
+
+    copyBtn.textContent = 'Генерується...';
+    copyBtn.disabled = true;
+
+
+    html2canvas(target, {
+      scale: 2,
+      backgroundColor: '#ffffff',
+      useCORS: true
+    }).then(canvas => {
+      canvas.toBlob(blob => {
+        if (!blob) {
+          alert('Не вдалося згенерувати зображення.');
+          copyBtn.textContent = originalText;
+          copyBtn.disabled = false;
+          return;
+        }
+
+        navigator.clipboard.write([
+          new ClipboardItem({
+            [blob.type]: blob
+          })
+        ]).then(() => {
+          copyBtn.textContent = 'Скопійовано';
+          setTimeout(() => {
+            copyBtn.textContent = originalText;
+            copyBtn.disabled = false;
+          }, 2000);
+        }).catch(err => {
+          console.error('Помилка копіювання в буфер:', err);
+          alert('Не вдалося скопіювати автоматично. Спробуйте увімкнути дозволи для буфера обміну в браузері.');
+          copyBtn.textContent = originalText;
+          copyBtn.disabled = false;
+        });
+      }, 'image/png');
+    }).catch(err => {
+      console.error('Помилка html2canvas:', err);
+      copyBtn.textContent = originalText;
+      copyBtn.disabled = false;
+    });
+  }
+</script>

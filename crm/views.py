@@ -248,8 +248,8 @@ class StudentCreateView(View):
             s = form.save(commit=False)
             s.teacher = request.user
             s.save()
-            messages.success(request, f"Студента «{s.name}» збережено.")
             return redirect("crm:students")
+
         students = Student.objects.filter(teacher=request.user).order_by("name")
         return render(
             request,

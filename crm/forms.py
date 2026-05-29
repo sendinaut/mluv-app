@@ -1,18 +1,11 @@
 from django import forms
 from django.contrib.auth import get_user_model
-from django.contrib.auth.forms import UserCreationForm
 from crm.models import Lesson, Student
 
 User = get_user_model()
 
 
 class LessonCreateForm(forms.ModelForm):
-    is_blockout = forms.BooleanField(
-        required=False,
-        label="Просто зайняти слот (заглушка)",
-        widget=forms.CheckboxInput(attrs={"class": "checkbox-field"}),
-    )
-
     class Meta:
         model = Lesson
         fields = ["student", "datetime", "duration"]
