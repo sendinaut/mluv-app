@@ -50,12 +50,14 @@ class RegistrationForm(UserCreationForm):
 
     def save(self, commit=True):
         user = super().save(commit=False)
+
         token = self.cleaned_data.get("invite_token")
         invite = InviteCode.objects.get(code=token)
 
         if invite.invite_role == "student":
             user.is_student = True
             user.is_teacher = False
+
         elif invite.invite_role == "teacher":
             user.is_student = False
             user.is_teacher = True
@@ -63,8 +65,18 @@ class RegistrationForm(UserCreationForm):
         if commit:
             user.save()
 
+            user.refresh_from_db()
+            user.is_student = True if invite.invite_role == "student" else False
+            user.is_teacher = True if invite.invite_role == "teacher" else False
+            user.save(update_fields=["is_student", "is_teacher"])
+
             invite.is_used = True
             invite.accepted_by = user
             invite.save()
+
+            if invite.invite_role == "student":
+                for student in invite.linked_students.all():
+                    student.student_user = user
+                    student.save()
 
         return user

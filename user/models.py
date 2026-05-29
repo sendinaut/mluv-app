@@ -45,18 +45,16 @@ class UserManager(BaseUserManager):
 
 class User(AbstractUser):
     username = None
-    email = models.EmailField(_("email address"), unique=True)
+    first_name = None
+    last_name = None
+
+    email = models.EmailField(_("email address"), unique=True, null=False)
 
     is_teacher = models.BooleanField(default=False)
     is_student = models.BooleanField(default=False)
 
-    teacher = models.ForeignKey(
-        "self",
-        on_delete=models.SET_NULL,  # Якщо вчителя видалять, учень залишиться, але поле стане NULL
-        null=True,
-        blank=True,
-        related_name="students",  # Дозволить вчителю писати teacher.students.all()
-    )
+    full_name = models.CharField(max_length=255, null=True, blank=True)
+    phone_number = models.CharField(max_length=20, null=True, blank=True)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
@@ -66,18 +64,18 @@ class User(AbstractUser):
 
 class InviteCode(models.Model):
     ROLE_CHOICES = [
-        ("student", "Учень"),
-        ("teacher", "Вчитель"),
+        ("student", "учень"),
+        ("teacher", "вчитель"),
     ]
 
-    code = models.UUIDField(default=uuid.uuid4, unique=True)
+    code = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     invite_role = models.CharField(
         max_length=10, choices=ROLE_CHOICES, default="student"
     )
     created_by = models.ForeignKey(
         get_user_model(), on_delete=models.CASCADE, related_name="created_invites"
     )
-    accepted_by = models.OneToOneField(
+    accepted_by = models.ForeignKey(
         get_user_model(),
         on_delete=models.SET_NULL,
         null=True,
@@ -88,4 +86,4 @@ class InviteCode(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Invite ({self.invite_role}) by {self.created_by.email} (Used: {self.is_used})"
+        return str(self.code)

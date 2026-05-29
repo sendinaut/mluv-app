@@ -1,0 +1,185 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Оплата та Профіль — Mluv{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/schedule.css' %}" />
+  <style>
+    .tutor-meta-container {
+      display: flex;
+      gap: 12px;
+      font-size: 12px;
+      color: rgba(0,0,0,0.4);
+      margin-top: 4px;
+      align-items: center;
+    }
+    .balance-badge {
+      font-weight: 600;
+    }
+    .balance-positive {
+      color: #2ecc71;
+    }
+    .balance-negative {
+      color: #e53935;
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+  <div class="page-container">
+    {% include "elements/back_button.html" %}
+
+    {% if messages %}
+      <div class="messages">
+        {% for message in messages %}
+          <div class="message">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <div class="layout-centered">
+      <div class="card">
+        <div class="title">Платіжна інформація</div>
+
+        <form method="post" id="payment-combined-form">
+          {% csrf_token %}
+
+          {% if form.non_field_errors %}
+            {% for error in form.non_field_errors %}
+              <div class="errors" style="margin-bottom: 12px;">{{ error }}</div>
+            {% endfor %}
+          {% endif %}
+
+          <div class="form-group" style="margin-bottom: 12px;">
+            <label>Імʼя та прізвище на карті</label>
+            <input
+              type="text"
+              name="full_name"
+              class="input-field"
+              value="{{ form.full_name.value|default:'' }}"
+              placeholder="Прізвище Імʼя"
+            >
+            {% if form.full_name.errors %}
+              <div class="errors">{{ form.full_name.errors.0 }}</div>
+            {% endif %}
+          </div>
+
+          <div class="row" style="margin-bottom: 20px;">
+            <div class="form-group">
+              <label>Email (логін)</label>
+              <input
+                type="email"
+                name="email"
+                class="input-field"
+                value="{{ form.email.value|default:'' }}"
+                required
+              >
+              {% if form.email.errors %}
+                <div class="errors">{{ form.email.errors.0 }}</div>
+              {% endif %}
+            </div>
+            <div class="form-group">
+              <label>Телефон</label>
+              <input
+                type="text"
+                name="phone_number"
+                class="input-field"
+                value="{{ form.phone_number.value|default:'' }}"
+                placeholder="+380..."
+              >
+              {% if form.phone_number.errors %}
+                <div class="errors">{{ form.phone_number.errors.0 }}</div>
+              {% endif %}
+            </div>
+          </div>
+
+          <hr style="border: none; border-top: 1px solid rgba(0, 0, 0, 0.08); margin-bottom: 20px;">
+
+          <div class="form-group" style="margin-bottom: 24px;">
+            <label>Кількість занять для оплати</label>
+            <input
+              type="number"
+              name="lessons_count"
+              id="lessons-count-input"
+              class="input-field"
+              value="5"
+              min="1"
+              max="100"
+              style="max-width: 120px;"
+            >
+          </div>
+
+          <div class="field-label" style="margin-bottom: 12px;">Заняття</div>
+
+          <div class="student-list">
+            {% for student in student_crm %}
+              <div class="student-row">
+                <div>
+                  <span class="student-name">{{ student.teacher.full_name|default:student.teacher.email }}</span>
+
+                  <div class="tutor-meta-container">
+                    <div>
+                      Ціна за урок: <span class="tutor-price" data-price="{{ student.lesson_price|default:0 }}">{{ student.lesson_price|default:0 }}</span> ₴
+                    </div>
+                    <div>•</div>
+                    <div>
+                      Поточний баланс:
+                      <span class="balance-badge {% if student.lessons_count > 0 %}balance-positive{% else %}balance-negative{% endif %}">
+                        {{ student.lessons_count|default:0 }} уроків
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="student-actions">
+                  <button
+                    type="button"
+                    class="btn"
+                    style="padding: 8px 16px; font-size: 13px;"
+                    onclick="processTutorPayment('{{ student.teacher.pk }}')"
+                  >
+                    Сплатити <span class="btn-total-price"></span>
+                  </button>
+                </div>
+              </div>
+            {% empty %}
+              <div class="empty">У вас поки немає закріплених репетиторів у системі CRM.</div>
+            {% endfor %}
+          </div>
+
+          <input type="hidden" name="tutor_id" id="selected-tutor-id" value="" />
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const countInput = document.getElementById('lessons-count-input');
+
+    function calculateTotals() {
+      const count = parseInt(countInput.value) || 0;
+      document.querySelectorAll('.student-row').forEach(row => {
+        const price = parseFloat(row.querySelector('.tutor-price').getAttribute('data-price')) || 0;
+        const btnTotal = row.querySelector('.btn-total-price');
+        if (count > 0) {
+          btnTotal.textContent = `(${count * price} ₴)`;
+        } else {
+          btnTotal.textContent = '';
+        }
+      });
+    }
+
+    function processTutorPayment(tutorId) {
+      if (!countInput.value || parseInt(countInput.value) <= 0) {
+        alert('Будь ласка, вкажіть коректну кількість занять перед оплатою.');
+        return;
+      }
+      document.getElementById('selected-tutor-id').value = tutorId;
+      document.getElementById('payment-combined-form').submit();
+    }
+
+    countInput.addEventListener('input', calculateTotals);
+    window.addEventListener('DOMContentLoaded', calculateTotals);
+  </script>
+{% endblock %}

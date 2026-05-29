@@ -1,0 +1,10 @@
+<div class="navigation">
+  <a href="?week={{ prev_week }}" class="nav-btn">← Минулий</a>
+
+  <div class="week-center">
+    <span class="week-info">{{ start_date|date:"d.m" }} — {{ end_date|date:"d.m.Y" }}</span>
+    <a href="?" class="nav-btn-today">Поточний тиждень</a>
+  </div>
+
+  <a href="?week={{ next_week }}" class="nav-btn">Наступний →</a>
+</div>

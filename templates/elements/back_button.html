@@ -1,0 +1,117 @@
+<style>
+  .btn-back-fixed {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 9999;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--card);
+    color: var(--text);
+    border: 2px solid rgba(0, 0, 0, 0.04);
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    transition: all 0.2s ease;
+  }
+
+  .btn-back-fixed:hover {
+    color: #ffffff;
+    background-color: var(--accent);
+    border-color: var(--accent);
+    box-shadow: 0 6px 20px rgba(255, 123, 133, 0.3);
+    transform: scale(1.05);
+  }
+
+  .btn-back-fixed:active {
+    transform: scale(0.95);
+  }
+
+  .btn-back-fixed svg {
+    transition: transform 0.2s ease;
+  }
+
+  .btn-back-fixed:hover svg {
+    transform: translateX(-2px);
+  }
+
+  .btn-home-fixed {
+    position: fixed;
+    top: 20px;
+    left: 74px;
+    z-index: 9999;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--card);
+    color: var(--text);
+    border: 2px solid rgba(0, 0, 0, 0.04);
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    transition: all 0.2s ease;
+    text-decoration: none;
+  }
+
+  .btn-home-fixed:hover {
+    color: #ffffff;
+    background-color: var(--accent);
+    border-color: var(--accent);
+    box-shadow: 0 6px 20px rgba(255, 123, 133, 0.3);
+    transform: scale(1.05);
+  }
+
+  .btn-home-fixed:active {
+    transform: scale(0.95);
+  }
+
+  .btn-home-fixed svg {
+    transition: transform 0.2s ease;
+  }
+
+  .btn-home-fixed:hover svg {
+    transform: translateY(-2px);
+  }
+</style>
+
+<button
+  onclick="history.back()"
+  class="btn-back-fixed"
+  type="button"
+  title="Назад"
+>
+  <svg
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2.5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <line x1="19" y1="12" x2="5" y2="12"></line>
+    <polyline points="12 19 5 12 12 5"></polyline>
+  </svg>
+</button>
+
+<a href="{% url 'main:menu' %}" class="btn-home-fixed" title="Головна">
+  <svg
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2.5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"></path>
+    <polyline points="9 21 9 12 15 12 15 21"></polyline>
+  </svg>
+</a>

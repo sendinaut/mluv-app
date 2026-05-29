@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Оплата успішна — Mluv{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/schedule.css' %}" />
+  <style>
+    /* Невеликі специфічні стилі для іконки успіху, яких може не бути в schedule.css */
+    .success-icon-circle {
+      width: 72px;
+      height: 72px;
+      background-color: rgba(46, 204, 113, 0.15);
+      color: #2ecc71;
+      font-size: 36px;
+      font-weight: bold;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px auto;
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+  <div class="page-container">
+    {% include "elements/back_button.html" %}
+
+    <div class="layout-centered" style="margin-top: 40px;">
+      <div class="card" style="text-align: center; padding: 40px 24px;">
+
+        <div class="success-icon-circle">✓</div>
+
+        <div class="title" style="margin-bottom: 12px; float: none;">Дякуємо за оплату!</div>
+
+        <p style="font-size: 15px; color: rgba(0, 0, 0, 0.6); line-height: 1.5; max-width: 400px; margin: 0 auto 28px auto;">
+          Ваше замовлення успішно оброблено. Кількість занять буде додано до вашого балансу найближчим часом. Квитанцію про оплату надіслано на ваш Email.
+        </p>
+
+        <a href="/" class="btn" style="display: inline-block; text-decoration: none; padding: 12px 32px; font-size: 14px;">
+          До особистого кабінету
+        </a>
+
+      </div>
+    </div>
+  </div>
+{% endblock %}

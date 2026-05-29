@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Студенти — Mluv{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/schedule.css' %}" />
+  <link rel="stylesheet" href="{% static 'css/students.css' %}">
+{% endblock %}
+
+{% block content %}
+  <div class="page-container">
+    {% include "elements/back_button.html" %}
+
+    {% if messages %}
+      <div class="messages">
+        {% for message in messages %}
+          <div class="message">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <div class="layout">
+
+      <div class="card">
+        <div class="title">
+          {% if editing %}Редагувати{% else %}Новий студент{% endif %}
+        </div>
+
+        <form method="post">
+          {% csrf_token %}
+
+          <div class="form-group">
+            <label>Ім'я</label>
+            {{ form.name }}
+          </div>
+          {% if form.name.errors %}
+            <div style="color: var(--accent); font-size: 12px; margin-top: -6px;">
+              {{ form.name.errors.0 }}
+            </div>
+          {% endif %}
+
+          <div class="form-group">
+            <label>Залишок уроків</label>
+            {{ form.lessons_count }}
+          </div>
+          {% if form.lessons_count.errors %}
+            <div style="color: var(--accent); font-size: 12px; margin-top: -6px;">
+              {{ form.lessons_count.errors.0 }}
+            </div>
+          {% endif %}
+
+          <div class="form-group">
+            <label>Ціна за урок (грн)</label>
+            {{ form.lesson_price }}
+          </div>
+          {% if form.lesson_price.errors %}
+            <div style="color: var(--accent); font-size: 12px; margin-top: -6px;">
+              {{ form.lesson_price.errors.0 }}
+            </div>
+          {% endif %}
+
+          <button type="submit" class="btn" style="margin-top: 8px;">
+            {% if editing %}Зберегти зміни{% else %}Додати студента{% endif %}
+          </button>
+
+          {% if editing %}
+            <a href="{% url 'crm:students' %}" class="btn btn-cancel-link">
+              Скасувати
+            </a>
+          {% endif %}
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="title">Усі студенти</div>
+        <div class="student-list">
+          {% for student in students %}
+            <div class="student-row">
+
+              <div class="student-info">
+                <span class="student-name">{{ student.name }}</span>
+                <div class="student-meta">
+                  <span>Баланс: <span class="badge-balance">{{ student.lessons_count }} уроків</span></span>
+                  <span>•</span>
+                  <span>Ставка: {{ student.lesson_price }} грн</span>
+                </div>
+              </div>
+
+              <div class="student-actions">
+                {% if not student.invitation_code.is_used and student.invitation_code %}
+                  <a
+                    style="cursor: pointer;"
+                    class="action-link"
+                    data-invite-url="{{ request.scheme }}://{{ request.get_host }}{% url 'user:register' %}?invite={{ student.invitation_code.code }}"
+                    onclick="copyInviteLink(this)"
+                  >
+                    Запрошення
+                  </a>
+                {% endif %}
+
+                <a href="{% url 'crm:student-edit' student.pk %}" class="action-link">
+                  Редагувати
+                </a>
+
+                <form method="post" action="{% url 'crm:student-delete' student.pk %}" style="display: inline;">
+                  {% csrf_token %}
+                  <button type="submit" class="action-link btn-danger-action" onclick="return confirm('Видалити «{{ student.name }}»?')">
+                    Видалити
+                  </button>
+                </form>
+              </div>
+
+            </div>
+          {% empty %}
+            <div class="empty">Ще немає студентів</div>
+          {% endfor %}
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    function copyInviteLink(button) {
+      const url = button.getAttribute('data-invite-url');
+
+      navigator.clipboard.writeText(url).then(() => {
+        const originalText = button.textContent;
+        button.textContent = 'Скопійовано!';
+
+        setTimeout(() => {
+          button.textContent = originalText;
+          button.style.color = '';
+        }, 2000);
+      }).catch(err => {
+        console.error('Не вдалося скопіювати: ', err);
+      });
+    }
+  </script>
+{% endblock %}
