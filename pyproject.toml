@@ -11,4 +11,5 @@ dependencies = [
     "psycopg[binary]>=3.3.4",
     "requests>=2.34.2",
     "uvicorn>=0.48.0",
+    "whitenoise>=6.12.0",
 ]

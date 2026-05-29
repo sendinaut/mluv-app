@@ -12,4 +12,4 @@ echo "Collecting static files..."
 uv run manage.py collectstatic --noinput
 
 echo "Starting Gunicorn server..."
-exec uv run gunicorn crm_for_yasya.wsgi:application --bind 0.0.0.0:${PORT:-80} --workers 3 --threads 3
+exec uv run gunicorn crm_for_yasya.wsgi:application --bind 0.0.0.0:${PORT:-8000} --workers 3 --threads 3
