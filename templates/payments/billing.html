@@ -159,30 +159,53 @@
 
   <script>
     const countInput = document.getElementById('lessons-count-input');
+    const paymentForm = document.getElementById('payment-combined-form');
+    const selectedTutorInput = document.getElementById('selected-tutor-id');
+
 
     function calculateTotals() {
       const count = parseInt(countInput.value) || 0;
+
       document.querySelectorAll('.student-row').forEach(row => {
-        const price = parseFloat(row.querySelector('.tutor-price').getAttribute('data-price')) || 0;
+        const priceSpan = row.querySelector('.tutor-price');
+        if (!priceSpan) return;
+
+        const price = parseFloat(priceSpan.getAttribute('data-price')) || 0;
         const btnTotal = row.querySelector('.btn-total-price');
-        if (count > 0) {
-          btnTotal.textContent = `(${count * price} ₴)`;
-        } else {
-          btnTotal.textContent = '';
+
+        if (btnTotal) {
+          btnTotal.textContent = count > 0 ? `(${count * price} ₴)` : '';
         }
       });
     }
 
+
     function processTutorPayment(tutorId) {
-      if (!countInput.value || parseInt(countInput.value) <= 0) {
+      const count = parseInt(countInput.value) || 0;
+
+      if (count <= 0) {
         alert('Будь ласка, вкажіть коректну кількість занять перед оплатою.');
         return;
       }
-      document.getElementById('selected-tutor-id').value = tutorId;
-      document.getElementById('payment-combined-form').submit();
+
+
+      selectedTutorInput.value = tutorId;
+      paymentForm.submit();
     }
 
+
+
+    paymentForm.addEventListener('submit', function(event) {
+      if (!selectedTutorInput.value) {
+        event.preventDefault();
+        alert('Будь ласка, натисніть кнопку "Сплатити" навпроти відповідного викладача.');
+      }
+    });
+
+
     countInput.addEventListener('input', calculateTotals);
+    countInput.addEventListener('change', calculateTotals);
+
     window.addEventListener('DOMContentLoaded', calculateTotals);
   </script>
 {% endblock %}
