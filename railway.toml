@@ -3,8 +3,8 @@ builder = "dockerfile"
 dockerfilepath = "Dockerfile"
 
 [services.web]
-startcommand = "sh -c 'uv run manage.py wait_for_db && uv run manage.py migrate && uv run manage.py collectstatic --noinput && uv run gunicorn crm_for_yasya.wsgi:application --bind 0.0.0.0:$PORT --workers 3 --threads 3'"
+startCommand = "sh -c 'uv run manage.py wait_for_db && uv run manage.py migrate && uv run manage.py collectstatic --noinput && uv run gunicorn crm_for_yasya.wsgi:application --bind 0.0.0.0:$PORT --workers 3 --threads 3'"
 
 [services.qcluster]
-startcommand = "sh -c 'uv run manage.py wait_for_db && uv run manage.py qcluster'"
+startCommand = "sh -c 'uv run manage.py wait_for_db && uv run manage.py qcluster'"
 restartPolicy = "always"
