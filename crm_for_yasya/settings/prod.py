@@ -12,3 +12,11 @@ DATABASES = {
         "PORT": os.environ["POSTGRES_PORT"],
     }
 }
+
+Q_CLUSTER = {
+    "name": "crm_queue",
+    "workers": 2,
+    "timeout": 180,
+    "retry": 180,
+    "orm": "default",
+}
