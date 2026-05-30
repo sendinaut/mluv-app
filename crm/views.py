@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
+from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views import View
 
@@ -22,8 +23,8 @@ class LessonScheduleView(View):
             try:
                 start_of_week = datetime.strptime(week_str + "-1", "%Y-W%W-%w").date()
             except ValueError:
-                start_of_week = datetime.today().date() - timedelta(
-                    days=datetime.today().weekday()
+                start_of_week = timezone.localdate() - timedelta(
+                    days=timezone.localdate().weekday()
                 )
         else:
             today = datetime.today().date()
@@ -60,7 +61,9 @@ class LessonScheduleView(View):
 
             for hour in WORKING_HOURS:
                 slot_start = datetime.combine(
-                    day, datetime.min.time().replace(hour=hour)
+                    day,
+                    datetime.min.time().replace(hour=hour),
+                    tzinfo=timezone.get_current_timezone()
                 )
                 slot_end = slot_start + timedelta(hours=1)
                 is_free = True
