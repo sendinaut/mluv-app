@@ -1,26 +1,3 @@
-:root {
-  --bg: #fff9ec;
-  --accent: #ff7b85;
-  --text: #1e1e1e;
-  --card: #ffffff;
-  --green: #4caf50;
-  --danger: #dc3545;
-}
-
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-body {
-  font-family: Inter, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  padding: 4vw;
-  -webkit-font-smoothing: antialiased;
-}
-
 .page-container {
   max-width: 1200px;
   margin: 0 auto;
