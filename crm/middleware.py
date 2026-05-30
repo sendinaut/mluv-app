@@ -12,11 +12,6 @@ class UserTimezoneMiddleware:
 
         if tz_param and tz_param in zoneinfo.available_timezones():
             user_tz = tz_param
-            request.session["django_timezone"] = user_tz
-
-        elif "django_timezone" in request.session:
-            user_tz = request.session["django_timezone"]
-
         else:
             user_tz = "Europe/Prague"
 
