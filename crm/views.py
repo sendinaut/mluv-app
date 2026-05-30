@@ -63,7 +63,7 @@ class LessonScheduleView(View):
                 slot_start = datetime.combine(
                     day,
                     datetime.min.time().replace(hour=hour),
-                    tzinfo=timezone.get_current_timezone()
+                    tzinfo=timezone.get_current_timezone(),
                 )
                 slot_end = slot_start + timedelta(hours=1)
                 is_free = True

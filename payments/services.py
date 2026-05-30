@@ -7,10 +7,11 @@ from django.conf import settings
 
 from .models import Order, Payment, Status
 
+API_INVOICE_URL = "https://api.monobank.ua/api/merchant/invoice/create"
+API_RECEIPT_URL = "https://api.monobank.ua/api/merchant/receipt"
+
 
 class MonobankService:
-    API_URL = "https://api.monobank.ua/api/merchant/invoice/create"
-
     def __init__(self):
         self.headers = {
             "X-Token": settings.MONOBANK_TOKEN,
@@ -40,7 +41,7 @@ class MonobankService:
             "initiationKind": "client",
         }
 
-        response = requests.post(self.API_URL, json=payload, headers=self.headers)
+        response = requests.post(API_INVOICE_URL, json=payload, headers=self.headers)
         response.raise_for_status()
         data = response.json()
 
@@ -88,3 +89,16 @@ def validate_sign(x_sign_base64: str, body_bytes: bytes) -> bool:
         return False
     except:
         return False
+
+
+def send_receipt(order: Order) -> None:
+    payment_id = order.payment.external_id
+
+    payload = {
+        "invoiceId": payment_id,
+        "email": order.customer_email,
+    }
+
+    requests.get(
+        API_RECEIPT_URL, params=payload, headers={"X-Token": settings.MONOBANK_TOKEN}
+    )

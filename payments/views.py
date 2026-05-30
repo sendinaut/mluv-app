@@ -14,7 +14,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from crm.models import Student
 from .forms import PaymentInformationForm
 from .models import Order, Payment, FiscalStatus, Status
-from .services import MonobankService, validate_sign
+from .services import MonobankService, validate_sign, send_receipt
 
 User = get_user_model()
 
@@ -79,9 +79,10 @@ class StudentBillingView(LoginRequiredMixin, View):
                 return redirect(payment_url)
 
             except Exception as e:
+                print(e)
                 form.add_error(None, f"Помилка платіжної системи Monobank: {e}")
 
-        return self.get(request)
+        return redirect("payments:billing", {"form": form})
 
 
 class MonobankWebhookView(View):
@@ -114,7 +115,6 @@ class MonobankWebhookView(View):
             transaction.save()
 
             order = transaction.order
-            user = order.user
 
             if status == "success":
                 order.status = Status.PAID
@@ -123,17 +123,7 @@ class MonobankWebhookView(View):
 
                 order.student.save()
                 order.save()
-
-                wallet_data = data.get("walletData", {})
-                payment_info = data.get("paymentInfo", {})
-
-                card_token = wallet_data.get("cardToken")
-                masked_pan = payment_info.get("maskedPan")
-
-                if card_token:
-                    user.card_token = card_token
-                    user.masked_pan = masked_pan
-                    user.save(update_fields=["card_token", "masked_pan"])
+                send_receipt(order)
 
             elif status in ["failure", "reversed"]:
                 order.status = Status.FAILED
