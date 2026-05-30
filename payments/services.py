@@ -31,11 +31,12 @@ class MonobankService:
                 "reference": str(order.id),
                 "destination": "ФОП ЯРОСЛАВА ДМИТРІЄВА",
                 "comment": "Оплата за послуги заняття з чеської мовии",
-                "basket": [
+                "basketOrder": [
                     {
                         "name": f"Czech Lesson x{order.lessons_quantity}",
                         "qty": order.lessons_quantity,
                         "sum": price_per_lesson_in_cents,
+                        "total": amount_in_cents,
                         "unit": "pcs",
                         "code": "001",
                     }
