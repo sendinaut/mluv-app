@@ -1,5 +1,14 @@
+from datetime import timedelta
+
 from django.utils import timezone
+
+from payments.models import Order, Status
 
 
 def clear_unprocessed_orders():
-    print(1)
+    queryset = Order.objects.filter(
+        status__in=(Status.PENDING, Status.FAILED),
+        created_at__lt=timezone.now() - timedelta(hours=2),
+    )
+
+    queryset.delete()
