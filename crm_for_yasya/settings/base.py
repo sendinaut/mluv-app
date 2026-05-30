@@ -8,17 +8,13 @@ import user
 load_dotenv()
 
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 
 BASE_URL = os.getenv("BASE_URL")
 
 MONOBANK_TOKEN = os.getenv("MONOBANK_TOKEN")
-
-
-DEBUG = False
 
 ALLOWED_HOSTS = [
     "localhost",
@@ -76,22 +72,6 @@ TEMPLATES = [
 WSGI_APPLICATION = "crm_for_yasya.wsgi.application"
 
 
-# Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-
-
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.environ["POSTGRES_DB"],
-        "USER": os.environ["POSTGRES_USER"],
-        "PASSWORD": os.environ["POSTGRES_PASSWORD"],
-        "HOST": os.environ["POSTGRES_HOST"],
-        "PORT": os.environ["POSTGRES_PORT"],
-    }
-}
-
-
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
@@ -114,14 +94,13 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "uk-ua"
 
-TIME_ZONE = "UTC"
+TIME_ZONE = "Europe/Prague"
+
+USE_TZ = True
 
 USE_I18N = True
-
-USE_TZ = False
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
