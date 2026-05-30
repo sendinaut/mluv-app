@@ -16,4 +16,4 @@ ENV UV_NO_DEV=1
 
 WORKDIR /app
 
-RUN uv sync --locked
+RUN uv sync
