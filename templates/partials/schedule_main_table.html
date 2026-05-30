@@ -15,25 +15,25 @@
       <tr>
         {% for day in days_of_week %}
           <td>
-            {% for item in schedule_by_day|dict_key:day %}
-              {% if item.type == "lesson" %}
-                <div class="lesson-item"
-                     hx-get="{% url 'crm:edit_lesson' item.obj.id %}"
-                     hx-target="#lesson-form-container"
-                     hx-swap="innerHTML">
-                  <div class="lesson-time">{{ item.obj.datetime|date:"H:i" }}</div>
-                  <div class="lesson-student">
-                    {% if item.obj.is_blockout %}🚫 Зайнято{% else %}{{ item.obj.student.name }}{% endif %}
-                  </div>
-                  <div class="lesson-duration">{{ item.obj.duration }} хв</div>
+          {% for item in schedule_by_day|dict_key:day %}
+            {% if item.type == "lesson" %}
+              <div class="lesson-item lesson-status-{{ item.obj.status|lower }}"
+                   hx-get="{% url 'crm:edit_lesson' item.obj.id %}"
+                   hx-target="#lesson-form-container"
+                   hx-swap="innerHTML">
+                <div class="lesson-time">{{ item.obj.datetime|date:"H:i" }}</div>
+                <div class="lesson-student">
+                  {{ item.obj.student.name }}
                 </div>
+                <div class="lesson-duration">{{ item.obj.duration }} хв</div>
+              </div>
               {% else %}
-                <div class="free-slot">
-                  🪟 Вікно<br />
-                  <span style="font-size: 11px; font-weight: 400;">{{ item.label }}</span>
-                </div>
-              {% endif %}
-            {% endfor %}
+              <div class="free-slot">
+                🪟 Вікно<br />
+                <span style="font-size: 11px; font-weight: 400;">{{ item.label }}</span>
+              </div>
+            {% endif %}
+          {% endfor %}
           </td>
         {% endfor %}
       </tr>
