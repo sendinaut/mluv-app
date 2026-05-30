@@ -1,0 +1,82 @@
+{% load schedule_extras %}
+
+<style>
+  .btn-tz-minimal {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    height: 40px;
+    padding: 0 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background-color: var(--card);
+    color: var(--text);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 20px;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .btn-tz-minimal:hover {
+    background-color: var(--card);
+    border-color: var(--accent);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transform: translateY(-1px);
+  }
+
+  .btn-tz-minimal:active {
+    transform: translateY(1px);
+  }
+
+  .btn-tz-minimal svg {
+    opacity: 0.6;
+    transition: transform 0.3s ease, opacity 0.2s;
+  }
+
+  .btn-tz-minimal:hover svg {
+    opacity: 1;
+    transform: rotate(45deg);
+  }
+
+  .tz-change-arrow {
+    font-size: 10px;
+    opacity: 0.4;
+    transition: transform 0.2s;
+  }
+
+  .btn-tz-minimal:hover .tz-change-arrow {
+    transform: translateX(2px);
+    opacity: 0.8;
+    color: var(--accent);
+  }
+</style>
+
+{% if request.GET.tz == 'Europe/Kyiv' %}
+  <a href="?{% query_transform request tz='Europe/Prague' %}"
+     class="btn-tz-minimal"
+     title="Змінити часовий пояс на Чехію (Europe/Prague)">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"></circle>
+      <polyline points="12 6 12 12 16 14"></polyline>
+    </svg>
+    <span>UA</span>
+    <span class="tz-change-arrow">⇄</span>
+  </a>
+{% else %}
+  <a href="?{% query_transform request tz='Europe/Kyiv' %}"
+     class="btn-tz-minimal"
+     title="Змінити часовий пояс на Україну (Europe/Kyiv)">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"></circle>
+      <polyline points="12 6 12 12 16 14"></polyline>
+    </svg>
+    <span>CZ</span>
+    <span class="tz-change-arrow">⇄</span>
+  </a>
+{% endif %}

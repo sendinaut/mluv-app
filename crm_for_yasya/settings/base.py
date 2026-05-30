@@ -50,6 +50,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "crm.middleware.UserTimezoneMiddleware",
 ]
 
 ROOT_URLCONF = "crm_for_yasya.urls"
