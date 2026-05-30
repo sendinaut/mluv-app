@@ -24,4 +24,5 @@ body {
   background: var(--bg);
   color: var(--text);
   -webkit-font-smoothing: antialiased;
+  padding: 4vw;
 }
