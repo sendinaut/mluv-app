@@ -3,9 +3,6 @@
   "services": [
     {
       "name": "web",
-      "source": {
-        "type": "repository"
-      },
       "build": {
         "dockerfilePath": "./Dockerfile",
         "dockerfileContext": "."
@@ -16,9 +13,6 @@
     },
     {
       "name": "qcluster",
-      "source": {
-        "type": "repository"
-      },
       "build": {
         "dockerfilePath": "./Dockerfile",
         "dockerfileContext": "."
