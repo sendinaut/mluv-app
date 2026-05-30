@@ -25,18 +25,22 @@ class MonobankService:
         payload = {
             "amount": amount_in_cents,
             "ccy": 980,
-            "merchantInvoiceId": str(order.id),
             "redirectUrl": f"{settings.BASE_URL}/payment/success/",
             "webHookUrl": f"{settings.BASE_URL}/payment/webhook/",
-            "basket": [
-                {
-                    "name": f"Czech Lesson x{order.lessons_quantity}",
-                    "qty": order.lessons_quantity,
-                    "sum": price_per_lesson_in_cents,
-                    "unit": "pcs",
-                    "code": "001",
-                }
-            ],
+            "merchantPaymInfo": {
+                "reference": str(order.id),
+                "destination": "ФОП ЯРОСЛАВА ДМИТРІЄВА",
+                "comment": "Оплата за послуги заняття з чеської мовии",
+                "basket": [
+                    {
+                        "name": f"Czech Lesson x{order.lessons_quantity}",
+                        "qty": order.lessons_quantity,
+                        "sum": price_per_lesson_in_cents,
+                        "unit": "pcs",
+                        "code": "001",
+                    }
+                ],
+            },
             "initiationKind": "client",
             "validity": 60 * 60 * 2,
         }
