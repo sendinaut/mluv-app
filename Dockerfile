@@ -16,8 +16,8 @@ ENV UV_NO_DEV=1
 
 WORKDIR /app
 
-RUN chmod 755 /start.sh
+RUN chmod +x start.sh
 
 RUN uv sync
 
-ENTRYPOINT ["/start.sh"]
+ENTRYPOINT ["start.sh"]
