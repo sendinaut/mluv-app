@@ -2,6 +2,19 @@ body {
   padding: 4vw;
 }
 
+@media only screen and (max-width: 870px) {
+  body {
+    padding-top: 13vw;
+  }
+}
+
+
+@media only screen and (max-width: 440px) {
+  body {
+    padding-top: 20vw;
+  }
+}
+
 .page-container {
   max-width: 1200px;
   margin: 0 auto;
