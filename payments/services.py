@@ -33,7 +33,6 @@ class MonobankService:
                     "name": f"Czech Lesson x{order.lessons_quantity}",
                     "qty": order.lessons_quantity,
                     "sum": price_per_lesson_in_cents,
-                    "icon": f"{settings.BASE_URL}/static/img/lesson.png",
                     "unit": "pcs",
                     "code": "001",
                 }
