@@ -19,4 +19,4 @@ COPY q_entrypoint.sh q_entrypoint.sh
 RUN chmod +x q_entrypoint.sh
 RUN uv sync
 
-ENTRYPOINT ["/q_entrypoint.sh"]
+ENTRYPOINT ["./q_entrypoint.sh"]
