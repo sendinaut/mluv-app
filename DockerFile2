@@ -15,7 +15,6 @@ WORKDIR /app
 
 ENV UV_NO_DEV=1
 
-COPY q_entrypoint.sh q_entrypoint.sh
 RUN chmod +x q_entrypoint.sh
 RUN uv sync
 

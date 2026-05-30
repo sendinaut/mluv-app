@@ -4,7 +4,11 @@ services:
       - .env
     build: .
     command: >
-      sh -c ""
+      sh -c "uv run python manage.py wait_for_db &&
+        uv run python manage.py makemigrations &&
+        uv run python manage.py migrate &&
+        uv run python manage.py collectstatic --noinput &&
+        uv run gunicorn crm_for_yasya.wsgi:application --bind 0.0.0.0:\${PORT:-8000} --workers 3 --threads 3"
     ports:
       - "${PORT}:${PORT}"
     environment:
