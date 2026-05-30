@@ -39,7 +39,7 @@ class MonobankService:
                 }
             ],
             "initiationKind": "client",
-            "validity" : 60 * 60 * 2,
+            "validity": 60 * 60 * 2,
         }
 
         response = requests.post(API_INVOICE_URL, json=payload, headers=self.headers)
