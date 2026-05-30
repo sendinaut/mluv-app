@@ -10,10 +10,12 @@ RUN sh /uv-installer.sh && rm /uv-installer.sh
 ENV PATH="/root/.local/bin/:$PATH"
 ENV PYTHONUNBUFFERED=1
 
-WORKDIR /app
 COPY . /app
+WORKDIR /app
 
 ENV UV_NO_DEV=1
+
+COPY q_entrypoint.sh /q_entrypoint.sh
 
 RUN uv sync
 
