@@ -26,6 +26,15 @@ CSRF_TRUSTED_ORIGINS = [
     BASE_URL,
 ]
 
+
+Q_CLUSTER = {
+    "name": "crm_queue",
+    "workers": 2,
+    "timeout": 30,
+    "retry": 30,
+    "orm": "default",
+}
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -39,6 +48,7 @@ INSTALLED_APPS = [
     "main",
     "crm",
     "payments",
+    "django_q",
 ]
 
 MIDDLEWARE = [
