@@ -7,6 +7,7 @@ ADD https://astral.sh/uv/install.sh /uv-installer.sh
 
 RUN sh /uv-installer.sh && rm /uv-installer.sh
 
+ENV PATH="/root/.local/bin/:$PATH"
 ENV PYTHONUNBUFFERED=1
 
 COPY . /app
@@ -15,8 +16,4 @@ ENV UV_NO_DEV=1
 
 WORKDIR /app
 
-RUN chmod +x start.sh
-
 RUN uv sync
-
-ENTRYPOINT ["start.sh"]
