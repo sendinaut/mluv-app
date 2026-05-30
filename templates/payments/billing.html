@@ -6,6 +6,9 @@
 {% block extra_css %}
   <link rel="stylesheet" href="{% static 'css/schedule.css' %}" />
   <style>
+    .page-container {
+        padding: 4vw;
+    }
     .tutor-meta-container {
       display: flex;
       gap: 12px;
@@ -22,6 +25,11 @@
     }
     .balance-negative {
       color: #e53935;
+    }
+    @media only screen and (max-width: 870px) {
+      body {
+        padding-top: 13vw;
+      }
     }
   </style>
 {% endblock %}
