@@ -5,6 +5,8 @@ set -e
 uv run manage.py wait_for_db
 
 echo "Running migrations..."
+uv run manage.py collectstatic --noinput
+uv run manage.py makemigrations
 uv run manage.py migrate
 
 uv run gunicorn crm_for_yasya.wsgi:application \
