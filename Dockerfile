@@ -15,8 +15,5 @@ COPY . /app
 
 ENV UV_NO_DEV=1
 
-COPY web_entrypoint.sh web_entrypoint.sh
-RUN chmod +x web_entrypoint.sh
+RUN chmod +x web_entrypoint.sh q_entrypoint.sh
 RUN uv sync
-
-ENTRYPOINT ["./web_entrypoint.sh"]

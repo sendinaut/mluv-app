@@ -1,0 +1,31 @@
+{
+  "$schema": "https://railway.app/railway.schema.json",
+  "services": [
+    {
+      "name": "web",
+      "source": {
+        "type": "repository"
+      },
+      "build": {
+        "dockerfilePath": "./Dockerfile",
+        "dockerfileContext": "."
+      },
+      "deploy": {
+        "startCommand": "./web_entrypoint.sh"
+      }
+    },
+    {
+      "name": "qcluster",
+      "source": {
+        "type": "repository"
+      },
+      "build": {
+        "dockerfilePath": "./Dockerfile",
+        "dockerfileContext": "."
+      },
+      "deploy": {
+        "startCommand": "./q_entrypoint.sh"
+      }
+    }
+  ]
+}
