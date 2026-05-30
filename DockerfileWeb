@@ -17,3 +17,5 @@ ENV UV_NO_DEV=1
 
 RUN chmod +x web_entrypoint.sh
 RUN uv sync
+
+ENTRYPOINT ["./web_entrypoint.sh"]
