@@ -10,12 +10,11 @@ RUN sh /uv-installer.sh && rm /uv-installer.sh
 ENV PATH="/root/.local/bin/:$PATH"
 ENV PYTHONUNBUFFERED=1
 
+WORKDIR /app
 COPY . /app
 
 ENV UV_NO_DEV=1
 
-WORKDIR /app
-
 RUN uv sync
 
-ENTRYPOINT ["/web_entrypoint.sh"]
+ENTRYPOINT ["web_entrypoint.sh"]
