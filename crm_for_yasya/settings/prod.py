@@ -15,8 +15,8 @@ DATABASES = {
 
 Q_CLUSTER = {
     "name": "crm_queue",
-    "workers": 2,
-    "timeout": 180,
-    "retry": 180,
+    "workers": 1,
+    "timeout": 3600 * 5,
+    "retry": 1800,
     "orm": "default",
 }
