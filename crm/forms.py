@@ -1,5 +1,7 @@
 from django import forms
 from django.contrib.auth import get_user_model
+from django.utils import timezone
+
 from crm.models import Lesson, Student
 
 User = get_user_model()
@@ -97,6 +99,7 @@ class RecurringScheduleForm(forms.Form):
 
     def __init__(self, *args, user=None, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields["start_from"].initial = timezone.localdate()
         if user:
             self.fields["student"].queryset = Student.objects.filter(teacher=user)
 

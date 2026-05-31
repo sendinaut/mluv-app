@@ -232,7 +232,7 @@ class RecurringScheduleView(View):
         start_from = form.cleaned_data["start_from"]
         selected_days = form.cleaned_data["selected_days"]
 
-        created = []
+        created = 0
         for week_offset in range(weeks):
             for day_cfg in selected_days:
                 weekday = day_cfg["weekday"]
@@ -242,27 +242,25 @@ class RecurringScheduleView(View):
                 days_ahead = (weekday - start_from.weekday()) % 7
                 lesson_date = start_from + timedelta(days=days_ahead + week_offset * 7)
                 lesson_dt = datetime.combine(lesson_date, time_slot)
+                current_tz = timezone.get_current_timezone()
+                lesson_dt = timezone.make_aware(lesson_dt, current_tz)
 
-                exists = Lesson.objects.filter(
+                lesson = Lesson(
                     teacher=request.user,
                     student=student,
                     datetime=lesson_dt,
-                ).exists()
+                    duration=duration,
+                    status=LessonStatus.PLANNED,
+                )
 
-                if not exists:
-                    created.append(
-                        Lesson.objects.create(
-                            teacher=request.user,
-                            student=student,
-                            datetime=lesson_dt,
-                            duration=duration,
-                            status=LessonStatus.PLANNED,
-                        )
-                    )
+                try:
+                    lesson.clean()
+                    created += 1
+                    lesson.save()
+                except:
+                    pass
 
-        messages.success(
-            request, f"Створено {len(created)} урок(ів) для «{student.name}»."
-        )
+        messages.success(request, f"Створено {created} урок(ів) для «{student.name}».")
         return redirect("crm:students")
 
 
