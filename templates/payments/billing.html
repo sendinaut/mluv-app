@@ -26,6 +26,32 @@
     .balance-negative {
       color: #e53935;
     }
+    .offer-checkbox-container {
+        margin-top: 10px;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: flex-start;
+        font-size: 12px;
+        line-height: 1.3;
+    }
+    .offer-checkbox-container input[type="checkbox"] {
+        margin-right: 8px;
+        margin-top: 1px;
+        cursor: pointer;
+        width: 13px;
+        height: 13px;
+    }
+    .offer-checkbox-container label {
+        cursor: pointer;
+        color: #555;
+    }
+    .offer-checkbox-container a {
+        color: #2b393c;
+        text-decoration: underline;
+    }
+    .offer-checkbox-container a:hover {
+        text-decoration: none;
+    }
   </style>
 {% endblock %}
 
@@ -97,6 +123,13 @@
             </div>
           </div>
 
+          <div class="offer-checkbox-container">
+            <input type="checkbox" id="public-offer" name="public_offer" required>
+            <label for="public-offer">
+                Я ознайомився/лась та погоджуюсь з <a href="{% url 'main:public-offer-url' %}" target="_blank">умовами публічної оферти</a>
+            </label>
+          </div>
+
           <hr style="border: none; border-top: 1px solid rgba(0, 0, 0, 0.08); margin-bottom: 20px;">
 
           <div class="form-group" style="margin-bottom: 24px;">
@@ -161,6 +194,7 @@
     const countInput = document.getElementById('lessons-count-input');
     const paymentForm = document.getElementById('payment-combined-form');
     const selectedTutorInput = document.getElementById('selected-tutor-id');
+    const offerCheckbox = document.getElementById('public-offer');
 
 
     function calculateTotals() {
@@ -190,7 +224,12 @@
 
 
       selectedTutorInput.value = tutorId;
-      paymentForm.submit();
+      if (!offerCheckbox.checked) {
+          alert('Будь ласка, ознайомтесь з умовами публічної оферти!');
+      }
+      else {
+        paymentForm.submit();
+      }
     }
 
 
