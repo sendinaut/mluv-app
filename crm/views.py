@@ -275,12 +275,6 @@ def edit_lesson(request, lesson_id):
         form = LessonCreateForm(request.POST, instance=lesson, user=request.user)
         form.instance.teacher = request.user
 
-        if request.POST.get("is_blockout") == "on":
-            blockout_student, _ = Student.objects.get_or_create(
-                name="🔒 Зайнято / Блок", teacher=request.user
-            )
-            form.instance.student = blockout_student
-
         if form.is_valid():
             form.save()
             return redirect(f"/schedule/?week={current_week_str}")

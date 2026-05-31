@@ -18,7 +18,7 @@
           {% for item in schedule_by_day|dict_key:day %}
             {% if item.type == "lesson" %}
               <div class="lesson-item lesson-status-{{ item.obj.status|lower }}"
-                   hx-get="{% url 'crm:edit_lesson' item.obj.id %}"
+                   hx-get="{% url 'crm:edit_lesson' item.obj.id %}?week={{ current_week_str }}"
                    hx-target="#lesson-form-container"
                    hx-swap="innerHTML">
                 <div class="lesson-time">{{ item.obj.datetime|date:"H:i" }}</div>
