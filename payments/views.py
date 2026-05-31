@@ -116,7 +116,7 @@ class MonobankWebhookView(View):
 
             order = transaction.order
 
-            if status == "success":
+            if status == "success" and order.status != Status.PAID:
                 order.status = Status.PAID
                 order.student.lessons_count += order.lessons_quantity
                 order.fiscal_status = FiscalStatus.PENDING
