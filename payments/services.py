@@ -29,8 +29,7 @@ class MonobankService:
             "webHookUrl": f"{settings.BASE_URL}/payment/webhook/",
             "merchantPaymInfo": {
                 "reference": str(order.id),
-                "destination": "ФОП ЯРОСЛАВА ДМИТРІЄВА",
-                "comment": "Оплата за послуги заняття з чеської мовии",
+                "destination": "Оплата за освітні послуги згідно з Договором публічної оферти від 01.06.2026",
                 "basketOrder": [
                     {
                         "name": f"Czech Lesson x{order.lessons_quantity}",
