@@ -19,15 +19,14 @@ class LessonScheduleView(View):
     template_name = "schedule/schedule.html"
 
     def get_week_bounds(self, week_str=None):
+        today = timezone.localdate()
+
         if week_str:
             try:
                 start_of_week = datetime.strptime(week_str + "-1", "%Y-W%W-%w").date()
             except ValueError:
-                start_of_week = timezone.localdate() - timedelta(
-                    days=timezone.localdate().weekday()
-                )
+                start_of_week = today - timedelta(days=today.weekday())
         else:
-            today = datetime.today().date()
             start_of_week = today - timedelta(days=today.weekday())
 
         end_of_week = start_of_week + timedelta(days=6)
@@ -48,28 +47,36 @@ class LessonScheduleView(View):
         schedule_by_day = {}
         free_slots_by_day = {}
 
+        current_tz = timezone.get_current_timezone()
+
         for day in days_of_week:
             free_slots_by_day[day] = []
-            day_lessons = sorted(
-                [l for l in lessons if l.datetime.date() == day],
-                key=lambda l: l.datetime,
-            )
+
+            day_lessons = []
+            for l in lessons:
+                local_dt = timezone.localtime(l.datetime, current_tz)
+                if local_dt.date() == day:
+                    l.local_datetime = local_dt
+                    day_lessons.append(l)
+
+            day_lessons.sort(key=lambda l: l.local_datetime)
 
             items = []
             prev_end_hour = 9
             free_hours = []
 
             for hour in WORKING_HOURS:
-                slot_start = datetime.combine(
-                    day,
-                    datetime.min.time().replace(hour=hour),
-                    tzinfo=timezone.get_current_timezone(),
+                naive_slot_start = datetime.combine(
+                    day, datetime.min.time().replace(hour=hour)
                 )
+                slot_start = timezone.make_aware(naive_slot_start, current_tz)
                 slot_end = slot_start + timedelta(hours=1)
+
                 is_free = True
                 for lesson in day_lessons:
-                    lesson_start = lesson.datetime
+                    lesson_start = lesson.local_datetime
                     lesson_end = lesson_start + timedelta(minutes=lesson.duration)
+
                     if not (slot_end <= lesson_start or slot_start >= lesson_end):
                         is_free = False
                         break
@@ -79,10 +86,10 @@ class LessonScheduleView(View):
             free_slots_by_day[day] = [f"{h:02d}:00" for h in free_hours]
 
             for lesson in day_lessons:
-                lesson_start_hour = lesson.datetime.hour
-                lesson_end_hour = lesson.datetime.hour + lesson.duration // 60
-                if lesson.duration % 60:
-                    lesson_end_hour += 1
+                lesson_start_hour = lesson.local_datetime.hour
+                lesson_end_hour = (
+                    lesson.local_datetime + timedelta(minutes=lesson.duration)
+                ).hour
 
                 if lesson_start_hour > prev_end_hour:
                     items.append(
