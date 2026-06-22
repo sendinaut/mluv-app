@@ -6,6 +6,41 @@ from django.core.exceptions import ValidationError
 from user.models import InviteCode
 
 
+class ResetPasswordForm(forms.Form):
+    reset_code = forms.CharField(widget=forms.HiddenInput())
+
+    password = forms.CharField(
+        label="New password",
+        widget=forms.PasswordInput(
+            attrs={
+                "class": "form-control",
+                "placeholder": "••••••••",
+            }
+        ),
+        min_length=8,
+    )
+
+    password_confirm = forms.CharField(
+        label="Repeat password",
+        widget=forms.PasswordInput(
+            attrs={
+                "class": "form-control",
+                "placeholder": "••••••••",
+            }
+        ),
+    )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data.get("password")
+        password_confirm = cleaned_data.get("password_confirm")
+
+        if password and password_confirm and password != password_confirm:
+            raise ValidationError("Паролі не збігаються.")
+
+        return cleaned_data
+
+
 class RegistrationForm(UserCreationForm):
     invite_token = forms.CharField(widget=forms.HiddenInput(), required=True)
     email = forms.EmailField(
