@@ -6,6 +6,7 @@ from django.contrib.auth.models import (
     BaseUserManager,
 )
 from django.db import models
+from django.urls import reverse_lazy
 from django.utils.translation import gettext as _
 
 
@@ -87,3 +88,18 @@ class InviteCode(models.Model):
 
     def __str__(self):
         return str(self.code)
+
+
+class ResetCode(models.Model):
+    code = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    user = models.ForeignKey(
+        get_user_model(),
+        on_delete=models.CASCADE,
+        related_name="reset_codes",
+        unique=True,
+    )
+    is_used = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{reverse_lazy('user:change_password')}?reset_code={self.code}"
