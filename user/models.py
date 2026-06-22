@@ -103,3 +103,4 @@ class ResetCode(models.Model):
 
     def __str__(self):
         return f"{reverse_lazy('user:change_password')}?reset_code={self.code}"
+# RAILWAY PLS UPDATE SITE
